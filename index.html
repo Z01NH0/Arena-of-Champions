@@ -154,7 +154,8 @@
         #gameUI {
             position: absolute;
             top: 10px;
-            left: 10px;
+            left: 0;
+            right: 0;
             color: white;
             font-size: 18px;
             z-index: 5;
@@ -316,7 +317,7 @@
         #scoreDisplay {
             position: absolute;
             top: 20px;
-            left: 150%;
+            left: 50%;
             transform: translateX(-50%);
             font-size: 24px;
             color: white;
@@ -364,6 +365,55 @@
         #victoryButtons {
             display: flex;
             gap: 20px;
+        }
+
+        .face {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .fireMage-face {
+            background-color: #f80;
+            border: 2px solid #f50;
+        }
+
+        .archer-face {
+            background-color: #0a0;
+            border: 2px solid #080;
+        }
+
+        .knight-face {
+            background-color: #300;
+            border: 2px solid #100;
+        }
+
+        .necromancer-face {
+            background-color: #808;
+            border: 2px solid #606;
+        }
+
+        .lancer-face {
+            background-color: #0ff;
+            border: 2px solid #0cc;
+        }
+
+        .assassin-face {
+            background-color: #840;
+            border: 2px solid #620;
+        }
+
+        .aim-arrow {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            transform-origin: 50% 100%;
         }
     </style>
 </head>
@@ -563,6 +613,10 @@
         let score = { red: 0, blue: 0 };
         let roundEndTime = 0;
         let roundWinnerTeam = null;
+        let lastDirection = {
+            red: { x: 1, y: 0 },
+            blue: { x: -1, y: 0 }
+        };
 
         // Cores dos personagens
         const characterColors = {
@@ -599,16 +653,25 @@
                 this.invulnerable = false;
                 this.swordAngle = 0;
                 this.attackCooldown = 0;
+                this.lastAttackTime = 0;
+                this.attacking = false;
+                this.attackDuration = 200;
                 this.stunnedUntil = 0;
                 this.visible = true;
                 this.lastBasicAttackTime = 0;
                 this.basicAttackReady = true;
+                this.aimAngle = team === 'red' ? 0 : Math.PI;
+                this.faceElement = document.createElement('div');
+                this.faceElement.className = `face ${type}-face`;
+                document.body.appendChild(this.faceElement);
+                this.aimArrow = document.createElement('div');
+                this.aimArrow.className = 'aim-arrow';
+                document.body.appendChild(this.aimArrow);
                 
                 // Configurações específicas por personagem
                 switch(type) {
                     case 'fireMage':
                         this.color = characterColors.fireMage;
-                   
                         this.bulletColor = team === 'red' ? '#f80' : '#0af';
                         this.bulletSize = 10;
                         this.shotInterval = 700;
@@ -700,6 +763,18 @@
                     if (keys['ArrowRight']) moveX += this.speed;
                 }
                 
+                // Atualizar direção da mira
+                if (moveX !== 0 || moveY !== 0) {
+                    this.aimAngle = Math.atan2(moveY, moveX);
+                    lastDirection[this.team] = { x: moveX, y: moveY };
+                } else {
+                    // Manter a última direção se não estiver se movendo
+                    const lastDir = lastDirection[this.team];
+                    if (lastDir.x !== 0 || lastDir.y !== 0) {
+                        this.aimAngle = Math.atan2(lastDir.y, lastDir.x);
+                    }
+                }
+                
                 // Normalizar movimento diagonal
                 if (moveX !== 0 && moveY !== 0) {
                     moveX *= 0.7071; // 1/sqrt(2)
@@ -713,6 +788,13 @@
                 const borderSize = 10;
                 this.x = Math.max(this.size + borderSize, Math.min(config.width - this.size - borderSize, this.x));
                 this.y = Math.max(this.size + borderSize, Math.min(config.height - this.size - borderSize, this.y));
+                
+                // Atualizar posição do rosto e seta de mira
+                this.faceElement.style.left = `${this.x + window.scrollX - 25}px`;
+                this.faceElement.style.top = `${this.y + window.scrollY - 25}px`;
+                this.aimArrow.style.left = `${this.x + window.scrollX + Math.cos(this.aimAngle) * (this.size + 10) - 7}px`;
+                this.aimArrow.style.top = `${this.y + window.scrollY + Math.sin(this.aimAngle) * (this.size + 10) - 7}px`;
+                this.aimArrow.style.transform = `rotate(${this.aimAngle}rad)`;
                 
                 // Verificar se habilidade especial está ativa
                 if (this.specialActive && Date.now() > this.specialEndTime) {
@@ -734,10 +816,7 @@
                 
                 // Atualizar ângulo da espada do cavaleiro ou lança do lanceiro
                 if (this.type === 'knight' || this.type === 'lancer') {
-                    const target = this.team === 'red' ? 
-                        { x: player2.x, y: player2.y } : 
-                        { x: player1.x, y: player1.y };
-                    this.swordAngle = Math.atan2(target.y - this.y, target.x - this.x);
+                    this.swordAngle = this.aimAngle;
                 }
                 
                 // Verificar se está atacando (lanceiro)
@@ -783,15 +862,24 @@
                     const swordEndX = this.x + Math.cos(this.swordAngle) * swordLength;
                     const swordEndY = this.y + Math.sin(this.swordAngle) * swordLength;
                     
-                    ctx.strokeStyle = '#800080'; // Roxo
+                    // Lâmina da espada (cinza)
+                    ctx.strokeStyle = '#ccc';
                     ctx.lineWidth = 5;
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.y);
                     ctx.lineTo(swordEndX, swordEndY);
                     ctx.stroke();
                     
-                    // Desenhar ponta da espada
-                    ctx.fillStyle = '#800080';
+                    // Base da espada (marrom)
+                    ctx.strokeStyle = '#840';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x + Math.cos(this.swordAngle) * this.size * 0.7, this.y + Math.sin(this.swordAngle) * this.size * 0.7);
+                    ctx.stroke();
+                    
+                    // Ponta da espada
+                    ctx.fillStyle = '#ccc';
                     ctx.beginPath();
                     ctx.arc(swordEndX, swordEndY, 5, 0, Math.PI * 2);
                     ctx.fill();
@@ -804,19 +892,18 @@
                     const lanceEndY = this.y + Math.sin(this.swordAngle) * lanceLength;
                     
                     // Cor da lança muda quando está atacando
-                    const lanceColor = this.attacking ? 
-                        (this.team === 'red' ? '#f80' : '#0af') : 
-                        this.color;
+                    const lanceTipColor = this.attacking ? '#f00' : '#fff';
                     
-                    ctx.strokeStyle = lanceColor;
+                    // Haste da lança (marrom)
+                    ctx.strokeStyle = '#840';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.y);
                     ctx.lineTo(lanceEndX, lanceEndY);
                     ctx.stroke();
                     
-                    // Desenhar ponta da lança
-                    ctx.fillStyle = lanceColor;
+                    // Ponta da lança (branca ou vermelha)
+                    ctx.fillStyle = lanceTipColor;
                     ctx.beginPath();
                     ctx.arc(lanceEndX, lanceEndY, 3, 0, Math.PI * 2);
                     ctx.fill();
@@ -849,11 +936,8 @@
                 this.basicAttackReady = false;
                 this.updateBasicAttackBar(0);
                 
-                // Calcular direção para o oponente
-                const target = this.team === 'red' ? 
-                    { x: player2.x, y: player2.y } : 
-                    { x: player1.x, y: player1.y };
-                const angle = Math.atan2(target.y - this.y, target.x - this.x);
+                // Usar ângulo de mira atual
+                const angle = this.aimAngle;
                 
                 switch(this.type) {
                     case 'fireMage':
@@ -1053,13 +1137,23 @@
                             team: this.team
                         });
                         
+                        // Efeito especial de fogo
+                        effects.push({
+                            x: this.x,
+                            y: this.y,
+                            radius: this.size + 50,
+                            duration: 3000,
+                            startTime: Date.now(),
+                            type: 'fireSpecial',
+                            team: this.team
+                        });
+                        
                         this.specialEndTime = Date.now();
                         break;
                         
                     case 'archer':
                         // Atirar 25 flechas na direção do oponente
-                        const opponent = this.team === 'red' ? player2 : player1;
-                        const angle = Math.atan2(opponent.y - this.y, opponent.x - this.x);
+                        const angle = this.aimAngle;
                         for (let i = 0; i < 25; i++) {
                             const spreadAngle = angle + (Math.random() - 0.5) * 0.5;
                             const arrow = new Bullet(
@@ -1122,6 +1216,17 @@
                                 target.takeDamage(10);
                             }
                         }, 780);
+                        
+                        // Efeito especial de espada
+                        effects.push({
+                            x: this.x,
+                            y: this.y,
+                            angle: this.swordAngle,
+                            duration: 3000,
+                            startTime: Date.now(),
+                            type: 'swordSpecial',
+                            team: this.team
+                        });
                         break;
                         
                     case 'necromancer':
@@ -1137,6 +1242,17 @@
                             );
                             monsters.push(monster);
                         }
+                        
+                        // Efeito especial de necromante
+                        effects.push({
+                            x: this.x,
+                            y: this.y,
+                            radius: this.size + 40,
+                            duration: 1500,
+                            startTime: Date.now(),
+                            type: 'necromancerSpecial',
+                            team: this.team
+                        });
                         
                         this.specialEndTime = Date.now();
                         break;
@@ -1182,6 +1298,17 @@
                                 clearInterval(checkCollision);
                             }
                         }, 50);
+                        
+                        // Efeito especial de investida
+                        effects.push({
+                            x: this.x,
+                            y: this.y,
+                            angle: this.swordAngle,
+                            duration: 2000,
+                            startTime: Date.now(),
+                            type: 'lancerSpecial',
+                            team: this.team
+                        });
                         break;
                         
                     case 'assassin':
@@ -1207,6 +1334,16 @@
                             );
                             projectiles.push(dagger);
                         }
+                        
+                        // Efeito especial de assassin
+                        effects.push({
+                            x: this.x,
+                            y: this.y,
+                            duration: 2400,
+                            startTime: Date.now(),
+                            type: 'assassinSpecial',
+                            team: this.team
+                        });
                         break;
                 }
                 
@@ -1224,6 +1361,7 @@
                 this.updateHealthBar();
                 
                 if (this.health <= 0) {
+                    // Ponto vai para o time que foi morto (inverso)
                     roundOver(this.team === 'red' ? 'blue' : 'red');
                 }
             }
@@ -1252,6 +1390,16 @@
                     player1Info.querySelector('.basic-attack-fill') : 
                     player2Info.querySelector('.basic-attack-fill');
                 basicAttackBar.style.width = `${percent}%`;
+            }
+            
+            destroy() {
+                // Remover elementos DOM quando o jogador for destruído
+                if (this.faceElement.parentNode) {
+                    this.faceElement.parentNode.removeChild(this.faceElement);
+                }
+                if (this.aimArrow.parentNode) {
+                    this.aimArrow.parentNode.removeChild(this.aimArrow);
+                }
             }
         }
 
@@ -1567,9 +1715,50 @@
             victoryScreen.style.display = 'flex';
             victoryText.textContent = `Vitória Time ${winningTeam === 'red' ? 'Vermelho' : 'Azul'}!`;
             victoryText.style.color = winningTeam === 'red' ? '#f00' : '#00f';
+            victoryText.style.textShadow = `0 0 20px ${winningTeam === 'red' ? '#f00' : '#00f'}`;
+            
+            // Efeito de confete
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'absolute';
+                    confetti.style.width = '10px';
+                    confetti.style.height = '10px';
+                    confetti.style.backgroundColor = winningTeam === 'red' ? 
+                        (Math.random() > 0.5 ? '#f00' : '#f80') : 
+                        (Math.random() > 0.5 ? '#00f' : '#0af');
+                    confetti.style.left = `${Math.random() * 100}%`;
+                    confetti.style.top = '-10px';
+                    confetti.style.borderRadius = '50%';
+                    confetti.style.zIndex = '30';
+                    document.body.appendChild(confetti);
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 100 + Math.random() * 200;
+                    const duration = 2 + Math.random() * 3;
+                    
+                    confetti.animate([
+                        { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                        { transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance + window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                    ], {
+                        duration: duration * 1000,
+                        easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+                    });
+                    
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                    }, duration * 1000);
+                }, i * 50);
+            }
         }
 
         function resetGame() {
+            // Remover elementos de rosto e seta dos jogadores anteriores
+            if (player1) player1.destroy();
+            if (player2) player2.destroy();
+            
             // Posicionar jogadores em lados opostos
             player1 = new Player(player1Selected, 'red', config.width * 0.25, config.height / 2);
             player2 = new Player(player2Selected, 'blue', config.width * 0.75, config.height / 2);
@@ -1606,6 +1795,19 @@
             score = { red: 0, blue: 0 };
             updateScoreDisplay();
             resetGame();
+        }
+
+        function returnToMenu() {
+            // Remover elementos de rosto e seta
+            if (player1) player1.destroy();
+            if (player2) player2.destroy();
+            
+            gameRunning = false;
+            victoryScreen.style.display = 'none';
+            gameUI.style.display = 'none';
+            menu.style.display = 'flex';
+            score = { red: 0, blue: 0 };
+            updateScoreDisplay();
         }
 
         function updateScoreDisplay() {
@@ -1906,6 +2108,75 @@
                     ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.globalAlpha = 1.0;
+                } else if (effect.type === 'fireSpecial') {
+                    // Efeito especial do mago de fogo
+                    const progress = (Date.now() - effect.startTime) / effect.duration;
+                    const alpha = 0.7 * (1 - progress);
+                    const radius = effect.radius * (1 + progress * 0.5);
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.3)' : 'rgba(0, 100, 255, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                } else if (effect.type === 'swordSpecial') {
+                    // Efeito especial do cavaleiro
+                    const progress = (Date.now() - effect.startTime) / effect.duration;
+                    const alpha = 0.7 * (1 - progress);
+                    const length = config.playerSize * 3;
+                    const endX = effect.x + Math.cos(effect.angle) * length;
+                    const endY = effect.y + Math.sin(effect.angle) * length;
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.strokeStyle = '#800080';
+                    ctx.lineWidth = 8;
+                    ctx.beginPath();
+                    ctx.moveTo(effect.x, effect.y);
+                    ctx.lineTo(endX, endY);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                } else if (effect.type === 'necromancerSpecial') {
+                    // Efeito especial do necromante
+                    const progress = (Date.now() - effect.startTime) / effect.duration;
+                    const alpha = 0.7 * (1 - progress);
+                    const radius = effect.radius * (1 + progress * 0.5);
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = 'rgba(128, 0, 128, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                } else if (effect.type === 'lancerSpecial') {
+                    // Efeito especial do lanceiro
+                    const progress = (Date.now() - effect.startTime) / effect.duration;
+                    const alpha = 0.7 * (1 - progress);
+                    const length = config.playerSize * 4;
+                    const endX = effect.x + Math.cos(effect.angle) * length;
+                    const endY = effect.y + Math.sin(effect.angle) * length;
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.5)' : 'rgba(0, 100, 255, 0.5)';
+                    ctx.lineWidth = 5;
+                    ctx.beginPath();
+                    ctx.moveTo(effect.x, effect.y);
+                    ctx.lineTo(endX, endY);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                } else if (effect.type === 'assassinSpecial') {
+                    // Efeito especial do assassino
+                    const progress = (Date.now() - effect.startTime) / effect.duration;
+                    const alpha = 0.7 * (1 - progress);
+                    const radius = config.playerSize * 2;
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.5)' : 'rgba(0, 100, 255, 0.5)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
                 }
             }
         }
@@ -1928,6 +2199,9 @@
             }
             if (e.key === 'y' && gameRunning && !gamePaused) {
                 player1.useSpecial();
+            }
+            if (e.key === 'g' && gameRunning && !gamePaused && player1.type === 'lancer') {
+                player1.attack();
             }
             
             // Teclas do jogador 2
@@ -1969,9 +2243,7 @@
         });
         
         menuButton.addEventListener('click', () => {
-            victoryScreen.style.display = 'none';
-            gameUI.style.display = 'none';
-            menu.style.display = 'flex';
+            returnToMenu();
         });
         
         characterElements.forEach(el => {
