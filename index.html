@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arena of Champions</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            font-family: Arial, sans-serif;
-            background-color: #222;
+            font-family: 'Poppins', sans-serif;
+            background-color: #111;
             color: white;
+            user-select: none;
         }
         
         #gameContainer {
             position: relative;
             width: 100vw;
             height: 100vh;
+            background: radial-gradient(circle at center, #222, #111);
         }
         
         #canvas {
@@ -31,44 +35,76 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(20,20,40,0.9) 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 10;
+            backdrop-filter: blur(5px);
         }
         
         #title {
-            font-size: 48px;
-            margin-bottom: 40px;
-            color: #f0f0f0;
-            text-shadow: 0 0 10px #fff;
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-shadow: 0 0 15px #4CAF50, 0 0 30px rgba(76, 175, 80, 0.5);
+            letter-spacing: 2px;
+            font-weight: 700;
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #4CAF50, 0 0 20px rgba(76, 175, 80, 0.5);
+            }
+            to {
+                text-shadow: 0 0 20px #4CAF50, 0 0 30px rgba(76, 175, 80, 0.8), 0 0 40px rgba(76, 175, 80, 0.6);
+            }
         }
         
         .team-select {
             display: flex;
             gap: 50px;
             margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         
         .team {
             display: flex;
             flex-direction: column;
             align-items: center;
+            background: rgba(30, 30, 50, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+        
+        .team:hover {
+            transform: translateY(-5px);
         }
         
         .team-title {
-            font-size: 24px;
+            font-size: 1.8rem;
             margin-bottom: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .team-red .team-title {
-            color: #f00;
+            color: #FF5252;
+            text-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
         }
         
         .team-blue .team-title {
-            color: #00f;
+            color: #4285F4;
+            text-shadow: 0 0 10px rgba(66, 133, 244, 0.5);
         }
         
         .character-select {
@@ -76,79 +112,142 @@
             flex-wrap: wrap;
             gap: 15px;
             justify-content: center;
-            max-width: 500px;
+            max-width: 600px;
         }
         
         .character {
-            width: 120px;
-            height: 160px;
-            background-color: #333;
-            border-radius: 10px;
+            width: 140px;
+            height: 180px;
+            background: linear-gradient(145deg, #2a2a3a, #1e1e2d);
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: 15px;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .character::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff0, #f0f, #0ff, #0f0, #00f);
+            background-size: 400%;
+            z-index: -1;
+            opacity: 0;
+            transition: 0.5s;
+            border-radius: 12px;
+            animation: animate 20s linear infinite;
+        }
+        
+        @keyframes animate {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+        
+        .character:hover::before {
+            opacity: 1;
         }
         
         .character:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px #555;
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.3);
         }
         
         .character.selected {
-            box-shadow: 0 0 20px currentColor;
+            box-shadow: 0 0 25px currentColor;
+            transform: translateY(-5px);
         }
         
         .team-red .character.selected {
-            border: 2px solid #f00;
-            color: #f00;
+            border: 3px solid #FF5252;
+            color: #FF5252;
         }
         
         .team-blue .character.selected {
-            border: 2px solid #00f;
-            color: #00f;
+            border: 3px solid #4285F4;
+            color: #4285F4;
         }
         
         .character-icon {
-            width: 70px;
-            height: 70px;
-            background-color: #555;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #3a3a4a, #2e2e3d);
             border-radius: 50%;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 30px;
+            font-size: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+        
+        .character:hover .character-icon {
+            transform: scale(1.1);
         }
         
         .character-name {
-            font-size: 16px;
-            margin-bottom: 5px;
+            font-size: 18px;
+            margin-bottom: 8px;
             text-align: center;
+            font-weight: 600;
         }
         
         .character-desc {
-            font-size: 10px;
+            font-size: 11px;
             text-align: center;
             color: #aaa;
+            line-height: 1.4;
         }
         
         #startButton {
-            padding: 15px 40px;
-            font-size: 20px;
-            background-color: #4CAF50;
+            padding: 18px 50px;
+            font-size: 22px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #startButton::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        #startButton:hover::before {
+            left: 100%;
         }
         
         #startButton:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+        
+        #startButton:active {
+            transform: translateY(1px);
         }
         
         #gameUI {
@@ -163,185 +262,97 @@
         }
         
         .health-bar {
-            width: 200px;
-            height: 20px;
+            width: 220px;
+            height: 25px;
             background-color: #333;
-            border: 2px solid #555;
-            margin-bottom: 5px;
+            border: 2px solid #444;
+            margin-bottom: 8px;
             position: relative;
+            border-radius: 12px;
+            overflow: hidden;
         }
         
         .health-fill {
             height: 100%;
             width: 100%;
-            background-color: #f00;
             transition: width 0.3s;
+            border-radius: 10px;
         }
         
         .team-red .health-fill {
-            background-color: #f00;
+            background: linear-gradient(to right, #FF5252, #FF8A80);
         }
         
         .team-blue .health-fill {
-            background-color: #00f;
+            background: linear-gradient(to right, #4285F4, #8AB4F8);
         }
         
         .special-bar {
-            width: 200px;
-            height: 15px;
+            width: 220px;
+            height: 18px;
             background-color: #333;
-            border: 2px solid #555;
-            margin-top: 10px;
+            border: 2px solid #444;
+            margin-top: 12px;
+            border-radius: 9px;
+            overflow: hidden;
         }
         
         .special-fill {
             height: 100%;
             width: 0%;
-            background-color: #00f;
             transition: width 0.3s;
+            background: linear-gradient(to right, #FFC107, #FFD54F);
+            border-radius: 7px;
         }
         
         .basic-attack-bar {
-            width: 200px;
-            height: 10px;
+            width: 220px;
+            height: 12px;
             background-color: #333;
-            border: 2px solid #555;
-            margin-top: 5px;
+            border: 2px solid #444;
+            margin-top: 8px;
+            border-radius: 6px;
+            overflow: hidden;
         }
         
         .basic-attack-fill {
             height: 100%;
             width: 0%;
-            background-color: #0f0;
             transition: width 0.3s;
+            background: linear-gradient(to right, #00E676, #69F0AE);
+            border-radius: 4px;
         }
         
         .player-info {
             position: absolute;
-            top: 10px;
-            width: 220px;
-            padding: 10px;
+            top: 20px;
+            width: 250px;
+            padding: 15px;
             background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 5px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border-top: 3px solid;
         }
         
         #player1Info {
-            left: 10px;
-            border-left: 3px solid #f00;
+            left: 20px;
+            border-color: #FF5252;
         }
         
         #player2Info {
-            right: 10px;
-            border-right: 3px solid #00f;
+            right: 20px;
+            border-color: #4285F4;
         }
         
         .player-name {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         
         #gameOver {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-        }
-        
-        #gameOver h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        
-        #winnerText {
-            font-size: 36px;
-            margin-bottom: 30px;
-        }
-        
-        #restartButton {
-            padding: 15px 40px;
-            font-size: 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        #restartButton:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-        
-        #menuButton {
-            padding: 15px 40px;
-            font-size: 20px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-        
-        #menuButton:hover {
-            background-color: #d32f2f;
-            transform: scale(1.05);
-        }
-        
-        .instructions {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #aaa;
-            font-size: 14px;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .controls {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #ccc;
-        }
-        
-        #scoreDisplay {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 24px;
-            border-radius: 5px;
-            z-index: 5;
-        }
-        
-        #roundWinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 48px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 20px 40px;
-            border-radius: 10px;
-            z-index: 15;
-            display: none;
-        }
-        
-        #victoryScreen {
             position: absolute;
             top: 0;
             left: 0;
@@ -352,35 +363,321 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            z-index: 20;
+            backdrop-filter: blur(5px);
+        }
+        
+        #gameOver h1 {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        
+        #winnerText {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+        
+        #restartButton {
+            padding: 18px 50px;
+            font-size: 22px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        #restartButton:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+        
+        #menuButton {
+            padding: 18px 50px;
+            font-size: 22px;
+            background: linear-gradient(45deg, #f44336, #FF5252);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+        
+        #menuButton:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.6);
+        }
+        
+        .instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        .controls {
+            margin-top: 12px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            font-weight: 600;
+        }
+        
+        #scoreDisplay {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 12px 30px;
+            border-radius: 50px;
+            z-index: 5;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 2px solid #444;
+        }
+        
+        #roundWinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px 60px;
+            border-radius: 20px;
+            z-index: 15;
+            display: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        #victoryScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             z-index: 25;
+            backdrop-filter: blur(10px);
         }
         
         #victoryText {
-            font-size: 72px;
-            margin-bottom: 40px;
+            font-size: 5rem;
+            margin-bottom: 50px;
             color: gold;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: victoryGlow 2s infinite alternate;
+        }
+        
+        @keyframes victoryGlow {
+            from {
+                text-shadow: 0 0 10px gold, 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+            to {
+                text-shadow: 0 0 20px gold, 0 0 40px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.6);
+            }
         }
         
         #victoryButtons {
             display: flex;
-            gap: 20px;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-       
+        .face {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+        }
+
+        .fireMage-face {
+            background: linear-gradient(145deg, #FF9800, #FF5722);
+            border-color: #E65100;
+        }
+
+        .archer-face {
+            background: linear-gradient(145deg, #4CAF50, #2E7D32);
+            border-color: #1B5E20;
+        }
+
+        .knight-face {
+            background: linear-gradient(145deg, #424242, #212121);
+            border-color: #000;
+        }
+
+        .necromancer-face {
+            background: linear-gradient(145deg, #9C27B0, #7B1FA2);
+            border-color: #4A148C;
+        }
+
+        .lancer-face {
+            background: linear-gradient(145deg, #00BCD4, #00838F);
+            border-color: #006064;
+        }
+
+        .assassin-face {
+            background: linear-gradient(145deg, #795548, #5D4037);
+            border-color: #3E2723;
+        }
 
         .aim-arrow {
             position: absolute;
-            width: 15px;
-            height: 15px;
+            width: 20px;
+            height: 20px;
             background-color: white;
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
             transform-origin: 50% 100%;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+        
+        /* Efeitos de partículas */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background-color: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+        
+        @keyframes float {
+            to {
+                transform: translateY(-100vh);
+            }
+        }
+        
+        /* Novo personagem - Mago do Gelo */
+        .iceMage-face {
+            background: linear-gradient(145deg, #00BCD4, #00838F);
+            border-color: #006064;
+        }
+        
+        /* Efeito de congelamento */
+        .frozen {
+            filter: hue-rotate(180deg) brightness(1.5);
+            animation: freezePulse 1s infinite;
+        }
+        
+        @keyframes freezePulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* Botão de mute */
+        #muteButton {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        #muteButton:hover {
+            background: rgba(0,0,0,0.7);
+            transform: scale(1.1);
+        }
+        
+        /* Efeitos de transição */
+        .transition-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        /* Efeito de dano */
+        .damage-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,0,0,0.3);
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0;
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
+        <div class="particles" id="particles"></div>
         <canvas id="canvas"></canvas>
         
         <div id="gameUI">
@@ -395,7 +692,7 @@
                 <div class="basic-attack-bar">
                     <div class="basic-attack-fill"></div>
                 </div>
-                <div class="controls">WASD - Movimento | T - Atirar | Y - Especial</div>
+                <div class="controls">WASD - Movimento | T - Atirar | Y - Especial | G - Ataque Corpo-a-Corpo</div>
             </div>
             
             <div id="player2Info" class="player-info team-blue">
@@ -409,7 +706,7 @@
                 <div class="basic-attack-bar">
                     <div class="basic-attack-fill"></div>
                 </div>
-                <div class="controls">Setas - Movimento | L - Atirar | Ç - Especial</div>
+                <div class="controls">Setas - Movimento | L - Atirar | Ç - Especial | . - Ataque Corpo-a-Corpo</div>
             </div>
             
             <div id="scoreDisplay">Vermelho 0 - 0 Azul</div>
@@ -425,32 +722,37 @@
                         <div class="character" data-character="fireMage">
                             <div class="character-icon">🔥</div>
                             <div class="character-name">Mago de Fogo</div>
-                            <div class="character-desc">Atira bolas de fogo que causam queimadura. Especial: Explosão de fogo.</div>
+                            <div class="character-desc">Atira bolas de fogo que causam queimadura. Especial: Explosão de fogo em área.</div>
                         </div>
                         <div class="character" data-character="archer">
                             <div class="character-icon">🏹</div>
                             <div class="character-name">Arqueiro Real</div>
-                            <div class="character-desc">Atira flechas rapidamente. Especial: Chuva de flechas.</div>
+                            <div class="character-desc">Atira flechas rapidamente. Especial: Chuva de flechas precisas.</div>
                         </div>
                         <div class="character" data-character="knight">
                             <div class="character-icon">⚔️</div>
                             <div class="character-name">Cavaleiro Negro</div>
-                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Espada poderosa.</div>
+                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Modo invencível com espada poderosa.</div>
                         </div>
                         <div class="character" data-character="necromancer">
                             <div class="character-icon">💀</div>
                             <div class="character-name">Necromante</div>
-                            <div class="character-desc">Invoca criaturas dos mortos. Especial: Invocação dos Mortos.</div>
+                            <div class="character-desc">Invoca criaturas dos mortos. Especial: Invoca 3 monstros (1 pode ser venenoso).</div>
                         </div>
                         <div class="character" data-character="lancer">
                             <div class="character-icon">🔱</div>
                             <div class="character-name">Lanceiro</div>
-                            <div class="character-desc">Ataques corpo-a-corpo poderosos. Especial: Investida Real.</div>
+                            <div class="character-desc">Ataques corpo-a-corpo poderosos. Especial: Investida invulnerável.</div>
                         </div>
                         <div class="character" data-character="assassin">
                             <div class="character-icon">🗡️</div>
                             <div class="character-name">Assassino</div>
-                            <div class="character-desc">Ataques rápidos e furtivos. Especial: Desaparecimento Letal.</div>
+                            <div class="character-desc">Ataques rápidos e furtivos. Especial: Invisibilidade e velocidade aumentada.</div>
+                        </div>
+                        <div class="character" data-character="iceMage">
+                            <div class="character-icon">❄️</div>
+                            <div class="character-name">Mago do Gelo</div>
+                            <div class="character-desc">Atira projéteis que congelam. Especial: Nevasca que reduz velocidade.</div>
                         </div>
                     </div>
                 </div>
@@ -461,45 +763,51 @@
                         <div class="character" data-character="fireMage">
                             <div class="character-icon">🔥</div>
                             <div class="character-name">Mago de Fogo</div>
-                            <div class="character-desc">Atira bolas de fogo que causam queimadura. Especial: Explosão de fogo.</div>
+                            <div class="character-desc">Atira bolas de fogo que causam queimadura. Especial: Explosão de fogo em área.</div>
                         </div>
                         <div class="character" data-character="archer">
                             <div class="character-icon">🏹</div>
                             <div class="character-name">Arqueiro Real</div>
-                            <div class="character-desc">Atira flechas rapidamente. Especial: Chuva de flechas.</div>
+                            <div class="character-desc">Atira flechas rapidamente. Especial: Chuva de flechas precisas.</div>
                         </div>
                         <div class="character" data-character="knight">
                             <div class="character-icon">⚔️</div>
                             <div class="character-name">Cavaleiro Negro</div>
-                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Espada poderosa.</div>
+                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Modo invencível com espada poderosa.</div>
                         </div>
                         <div class="character" data-character="necromancer">
                             <div class="character-icon">💀</div>
                             <div class="character-name">Necromante</div>
-                            <div class="character-desc">Invoca criaturas dos mortos. Especial: Invocação dos Mortos.</div>
+                            <div class="character-desc">Invoca criaturas dos mortos. Especial: Invoca 3 monstros (1 pode ser venenoso).</div>
                         </div>
                         <div class="character" data-character="lancer">
                             <div class="character-icon">🔱</div>
                             <div class="character-name">Lanceiro</div>
-                            <div class="character-desc">Ataques corpo-a-corpo poderosos. Especial: Investida Real.</div>
+                            <div class="character-desc">Ataques corpo-a-corpo poderosos. Especial: Investida invulnerável.</div>
                         </div>
                         <div class="character" data-character="assassin">
                             <div class="character-icon">🗡️</div>
                             <div class="character-name">Assassino</div>
-                            <div class="character-desc">Ataques rápidos e furtivos. Especial: Desaparecimento Letal.</div>
+                            <div class="character-desc">Ataques rápidos e furtivos. Especial: Invisibilidade e velocidade aumentada.</div>
+                        </div>
+                        <div class="character" data-character="iceMage">
+                            <div class="character-icon">❄️</div>
+                            <div class="character-name">Mago do Gelo</div>
+                            <div class="character-desc">Atira projéteis que congelam. Especial: Nevasca que reduz velocidade.</div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <button id="startButton">Começar Batalha</button>
-         
+            <div class="instructions">Selecione um personagem para cada time e clique em Começar Batalha</div>
         </div>
         
         <div id="gameOver">
             <h1>Fim da Batalha</h1>
             <div id="winnerText"></div>
             <button id="restartButton">Jogar Novamente</button>
+            <button id="menuButton">Menu</button>
         </div>
         
         <div id="roundWinner"></div>
@@ -508,10 +816,39 @@
             <div id="victoryText"></div>
             <div id="victoryButtons">
                 <button id="rematchButton">Revanche</button>
-                <button id="menuButton">Menu</button>
+                <button id="menuButton2">Menu</button>
             </div>
         </div>
+        
+        <div class="transition-screen" id="transitionScreen"></div>
+        <div class="damage-effect" id="damageEffect"></div>
+        
+        <button id="muteButton">🔊</button>
     </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-epic-action-arena-308.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="shootSound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-short-laser-gun-shot-1670.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="hitSound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arrow-whoosh-1491.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="specialSound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-magic-spell-675.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="victorySound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="defeatSound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
         // Configurações do jogo
@@ -527,7 +864,8 @@
                 knight: 20000,
                 necromancer: 20000,
                 lancer: 17000,
-                assassin: 15000
+                assassin: 15000,
+                iceMage: 16000
             },
             basicAttackCooldown: {
                 fireMage: 700,
@@ -535,7 +873,8 @@
                 knight: 550,
                 necromancer: 650,
                 lancer: 1000,
-                assassin: 300
+                assassin: 300,
+                iceMage: 800
             }
         };
 
@@ -557,6 +896,19 @@
         const victoryText = document.getElementById('victoryText');
         const rematchButton = document.getElementById('rematchButton');
         const menuButton = document.getElementById('menuButton');
+        const menuButton2 = document.getElementById('menuButton2');
+        const muteButton = document.getElementById('muteButton');
+        const particlesContainer = document.getElementById('particles');
+        const transitionScreen = document.getElementById('transitionScreen');
+        const damageEffect = document.getElementById('damageEffect');
+        
+        // Elementos de áudio
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const shootSound = document.getElementById('shootSound');
+        const hitSound = document.getElementById('hitSound');
+        const specialSound = document.getElementById('specialSound');
+        const victorySound = document.getElementById('victorySound');
+        const defeatSound = document.getElementById('defeatSound');
 
         // Estado do jogo
         let gameRunning = false;
@@ -579,16 +931,64 @@
             red: { x: 1, y: 0 },
             blue: { x: -1, y: 0 }
         };
+        let muted = false;
+        let particles = [];
 
         // Cores dos personagens
         const characterColors = {
-            fireMage: '#f80',    // Laranja
-            archer: '#0a0',     // Verde
-            knight: '#300',     // Preto
-            necromancer: '#808', // Roxo
-            lancer: '#0ff',     // Azul ciano
-            assassin: '#840'     // Marrom
+            fireMage: '#FF9800',    // Laranja
+            archer: '#4CAF50',     // Verde
+            knight: '#424242',     // Cinza escuro
+            necromancer: '#9C27B0', // Roxo
+            lancer: '#00BCD4',     // Azul ciano
+            assassin: '#795548',    // Marrom
+            iceMage: '#00B4D8'      // Azul gelo
         };
+
+        // Criar partículas de fundo
+        function createParticles() {
+            particles = [];
+            const particleCount = Math.floor(window.innerWidth * window.innerHeight / 1000);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 3 + 1;
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random() * window.innerHeight;
+                const opacity = Math.random() * 0.5 + 0.1;
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 20;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+                particle.style.opacity = opacity;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+                particles.push(particle);
+            }
+        }
+
+        // Efeito de transição
+        function fadeIn() {
+            transitionScreen.style.opacity = '1';
+            setTimeout(() => {
+                transitionScreen.style.opacity = '0';
+            }, 500);
+        }
+
+        // Efeito de dano
+        function showDamageEffect() {
+            damageEffect.style.opacity = '1';
+            setTimeout(() => {
+                damageEffect.style.opacity = '0';
+            }, 300);
+        }
 
         // Classes do jogo
         class Player {
@@ -602,7 +1002,7 @@
                 this.color = characterColors[type];
                 this.bulletSpeed = 10;
                 this.bulletSize = 8;
-                this.bulletColor = team === 'red' ? '#f80' : '#0af';
+                this.bulletColor = team === 'red' ? '#FF5252' : '#4285F4';
                 this.lastShotTime = 0;
                 this.shotInterval = config.basicAttackCooldown[type];
                 this.specialCooldown = config.specialCooldown[type];
@@ -623,15 +1023,27 @@
                 this.lastBasicAttackTime = 0;
                 this.basicAttackReady = true;
                 this.aimAngle = team === 'red' ? 0 : Math.PI;
+                this.faceElement = document.createElement('div');
+                this.faceElement.className = `face ${type}-face`;
+                if (type === 'fireMage') this.faceElement.textContent = '🔥';
+                else if (type === 'archer') this.faceElement.textContent = '🏹';
+                else if (type === 'knight') this.faceElement.textContent = '⚔️';
+                else if (type === 'necromancer') this.faceElement.textContent = '💀';
+                else if (type === 'lancer') this.faceElement.textContent = '🔱';
+                else if (type === 'assassin') this.faceElement.textContent = '🗡️';
+                else if (type === 'iceMage') this.faceElement.textContent = '❄️';
+                document.body.appendChild(this.faceElement);
                 this.aimArrow = document.createElement('div');
                 this.aimArrow.className = 'aim-arrow';
                 document.body.appendChild(this.aimArrow);
+                this.slowed = false;
+                this.frozenUntil = 0;
                 
                 // Configurações específicas por personagem
                 switch(type) {
                     case 'fireMage':
                         this.color = characterColors.fireMage;
-                        this.bulletColor = team === 'red' ? '#f80' : '#0af';
+                        this.bulletColor = team === 'red' ? '#FF5252' : '#FF8A80';
                         this.bulletSize = 10;
                         this.shotInterval = 700;
                         this.damage = 15;
@@ -640,7 +1052,7 @@
                         break;
                     case 'archer':
                         this.color = characterColors.archer;
-                        this.bulletColor = team === 'red' ? '#f00' : '#00f';
+                        this.bulletColor = team === 'red' ? '#FF5252' : '#4285F4';
                         this.bulletSize = 6;
                         this.shotInterval = 250;
                         this.damage = 15;
@@ -650,7 +1062,7 @@
                         break;
                     case 'knight':
                         this.color = characterColors.knight;
-                        this.bulletColor = team === 'red' ? '#a00' : '#00a';
+                        this.bulletColor = team === 'red' ? '#D32F2F' : '#1976D2';
                         this.bulletSize = 7;
                         this.shotInterval = 550;
                         this.damage = 27;
@@ -660,7 +1072,7 @@
                         break;
                     case 'necromancer':
                         this.color = characterColors.necromancer;
-                        this.bulletColor = team === 'red' ? '#a00' : '#00a';
+                        this.bulletColor = team === 'red' ? '#7B1FA2' : '#7C4DFF';
                         this.bulletSize = 10;
                         this.shotInterval = 650;
                         this.damage = 45;
@@ -680,7 +1092,7 @@
                         break;
                     case 'assassin':
                         this.color = characterColors.assassin;
-                        this.bulletColor = team === 'red' ? '#a00' : '#00a';
+                        this.bulletColor = team === 'red' ? '#5D4037' : '#8D6E63';
                         this.bulletSize = 5;
                         this.shotInterval = 300;
                         this.damage = 45;
@@ -688,11 +1100,37 @@
                         this.health = 220;
                         this.speed = config.playerSpeed * 1.3;
                         break;
+                    case 'iceMage':
+                        this.color = characterColors.iceMage;
+                        this.bulletColor = team === 'red' ? '#00B4D8' : '#90E0EF';
+                        this.bulletSize = 9;
+                        this.shotInterval = 800;
+                        this.damage = 18;
+                        this.maxHealth = 230;
+                        this.health = 230;
+                        break;
                 }
             }
             
             update() {
                 if (this.stunnedUntil > Date.now() || gamePaused) return;
+                
+                // Verificar se está congelado
+                if (this.frozenUntil > Date.now()) {
+                    this.speed = config.playerSpeed * 0.5;
+                    return;
+                } else if (this.slowed) {
+                    this.speed = config.playerSpeed * (this.type === 'assassin' ? 1.0 : 0.7);
+                } else {
+                    // Resetar velocidade para o padrão do personagem
+                    if (this.type === 'archer' || this.type === 'assassin') {
+                        this.speed = config.playerSpeed * 1.3;
+                    } else if (this.type === 'lancer') {
+                        this.speed = config.playerSpeed * 1.15;
+                    } else {
+                        this.speed = config.playerSpeed;
+                    }
+                }
                 
                 // Atualizar cooldown do ataque básico
                 if (!this.basicAttackReady) {
@@ -749,9 +1187,10 @@
                 this.y = Math.max(this.size + borderSize, Math.min(config.height - this.size - borderSize, this.y));
                 
                 // Atualizar posição do rosto e seta de mira
-               
-                this.aimArrow.style.left = `${this.x + window.scrollX + Math.cos(this.aimAngle) * (this.size + 10) - 7}px`;
-                this.aimArrow.style.top = `${this.y + window.scrollY + Math.sin(this.aimAngle) * (this.size + 10) - 7}px`;
+                this.faceElement.style.left = `${this.x + window.scrollX - 30}px`;
+                this.faceElement.style.top = `${this.y + window.scrollY - 30}px`;
+                this.aimArrow.style.left = `${this.x + window.scrollX + Math.cos(this.aimAngle) * (this.size + 15) - 10}px`;
+                this.aimArrow.style.top = `${this.y + window.scrollY + Math.sin(this.aimAngle) * (this.size + 15) - 10}px`;
                 this.aimArrow.style.transform = `rotate(${this.aimAngle}rad)`;
                 
                 // Verificar se habilidade especial está ativa
@@ -759,7 +1198,7 @@
                     this.specialActive = false;
                     
                     if (this.type === 'archer') {
-                        this.speed = config.playerSpeed;
+                        this.speed = config.playerSpeed * 1.3;
                     } else if (this.type === 'knight') {
                         this.invulnerable = false;
                         this.speed = config.playerSpeed;
@@ -769,6 +1208,8 @@
                     } else if (this.type === 'assassin') {
                         this.visible = true;
                         this.speed = config.playerSpeed * 1.3;
+                    } else if (this.type === 'iceMage') {
+                        // Nada a fazer ao terminar o especial
                     }
                 }
                 
@@ -794,20 +1235,30 @@
                 // Desenhar jogador atordoado
                 if (this.stunnedUntil > Date.now()) {
                     ctx.fillStyle = '#888';
+                } else if (this.frozenUntil > Date.now()) {
+                    ctx.fillStyle = '#00B4D8';
                 } else {
                     ctx.fillStyle = this.color;
+                }
+                
+                // Efeito de congelamento
+                if (this.frozenUntil > Date.now()) {
+                    ctx.shadowColor = '#00B4D8';
+                    ctx.shadowBlur = 15;
                 }
                 
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Resetar transparência
+                // Resetar efeitos
                 ctx.globalAlpha = 1.0;
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
                 
                 // Desenhar aura se for mago de fogo com especial ativo
                 if (this.type === 'fireMage' && this.specialActive) {
-                    ctx.strokeStyle = this.team === 'red' ? 'rgba(255, 100, 0, 0.5)' : 'rgba(0, 100, 255, 0.5)';
+                    ctx.strokeStyle = this.team === 'red' ? 'rgba(255, 82, 82, 0.5)' : 'rgba(66, 133, 244, 0.5)';
                     ctx.lineWidth = 10;
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.size + 30, 0, Math.PI * 2);
@@ -829,7 +1280,7 @@
                     ctx.stroke();
                     
                     // Base da espada (marrom)
-                    ctx.strokeStyle = '#840';
+                    ctx.strokeStyle = '#5D4037';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.y);
@@ -850,10 +1301,10 @@
                     const lanceEndY = this.y + Math.sin(this.swordAngle) * lanceLength;
                     
                     // Cor da lança muda quando está atacando
-                    const lanceTipColor = this.attacking ? '#f00' : '#fff';
+                    const lanceTipColor = this.attacking ? '#FF5252' : '#fff';
                     
                     // Haste da lança (marrom)
-                    ctx.strokeStyle = '#840';
+                    ctx.strokeStyle = '#5D4037';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.y);
@@ -869,14 +1320,15 @@
                 
                 // Desenhar nome do personagem
                 ctx.fillStyle = '#fff';
-                ctx.font = '12px Arial';
+                ctx.font = 'bold 14px Poppins';
                 ctx.textAlign = 'center';
                 ctx.fillText(this.type === 'fireMage' ? '🔥' : 
                             this.type === 'archer' ? '🏹' : 
                             this.type === 'knight' ? '⚔️' :
-                            this.type === 'necromancer' ? '☠️' :
-                            this.type === 'lancer' ? '🔱' : '🗡️', 
-                            this.x, this.y - this.size - 5);
+                            this.type === 'necromancer' ? '💀' :
+                            this.type === 'lancer' ? '🔱' : 
+                            this.type === 'assassin' ? '🗡️' : '❄️', 
+                            this.x, this.y - this.size - 8);
             }
             
             shoot() {
@@ -893,6 +1345,12 @@
                 this.lastBasicAttackTime = now;
                 this.basicAttackReady = false;
                 this.updateBasicAttackBar(0);
+                
+                // Tocar som de tiro
+                if (!muted) {
+                    shootSound.currentTime = 0;
+                    shootSound.play();
+                }
                 
                 // Usar ângulo de mira atual
                 const angle = this.aimAngle;
@@ -1025,6 +1483,23 @@
                             this.shotInterval = 300;
                         }
                         break;
+                        
+                    case 'iceMage':
+                        // Mago do Gelo atira projéteis que congelam
+                        const iceBall = new Bullet(
+                            this.x,
+                            this.y,
+                            angle,
+                            this.bulletSpeed * 0.9,
+                            this.bulletSize,
+                            this.bulletColor,
+                            this.damage,
+                            this.team,
+                            'freeze',
+                            { duration: 2000 }
+                        );
+                        projectiles.push(iceBall);
+                        break;
                 }
             }
             
@@ -1051,6 +1526,12 @@
                     opponent.x, opponent.y, opponent.size
                 )) {
                     opponent.takeDamage(this.damage);
+                    
+                    // Tocar som de hit
+                    if (!muted) {
+                        hitSound.currentTime = 0;
+                        hitSound.play();
+                    }
                 }
             }
             
@@ -1060,6 +1541,12 @@
                 this.specialReady = false;
                 this.specialActive = true;
                 this.updateSpecialBar(0);
+                
+                // Tocar som de especial
+                if (!muted) {
+                    specialSound.currentTime = 0;
+                    specialSound.play();
+                }
                 
                 switch(this.type) {
                     case 'fireMage':
@@ -1072,7 +1559,7 @@
                                 angle,
                                 this.bulletSpeed * 1.3,
                                 this.bulletSize * 1.5,
-                                this.team === 'red' ? '#f50' : '#05f',
+                                this.team === 'red' ? '#FF5252' : '#8AB4F8',
                                 20,
                                 this.team,
                                 'burn',
@@ -1159,8 +1646,11 @@
                         this.specialEndTime = Date.now() + 3000; 
                         
                         // Efeito de espada
-                        setInterval(() => {
-                            if (!this.specialActive) return;
+                        const swordInterval = setInterval(() => {
+                            if (!this.specialActive) {
+                                clearInterval(swordInterval);
+                                return;
+                            }
                             
                             const swordLength = this.size * 2.5;
                             const swordEndX = this.x + Math.cos(this.swordAngle) * swordLength;
@@ -1219,7 +1709,7 @@
                         // Investida violenta
                         this.invulnerable = true;
                         this.speed = config.playerSpeed * 2.5;
-                        this.specialEndTime = Date.now() + 2000; // 1 segundo de investida
+                        this.specialEndTime = Date.now() + 2000; // 2 segundos de investida
                         
                         // Verificar colisão durante a investida
                         const checkCollision = setInterval(() => {
@@ -1273,9 +1763,9 @@
                         // Invisibilidade e velocidade aumentada
                         this.visible = false;
                         this.speed = config.playerSpeed * 2; // 100% mais rápido
-                        this.specialEndTime = Date.now() + 2400; // 4 segundos
+                        this.specialEndTime = Date.now() + 2400; // 2.4 segundos
                         
-                        // Atirar 3 adagas envenenadas em direções aleatórias
+                        // Atirar 5 adagas envenenadas em direções aleatórias
                         for (let i = 0; i < 5; i++) {
                             const angle = Math.random() * Math.PI * 2;
                             const dagger = new Bullet(
@@ -1303,6 +1793,39 @@
                             team: this.team
                         });
                         break;
+                        
+                    case 'iceMage':
+                        // Nevasca que reduz velocidade
+                        for (let i = 0; i < 30; i++) {
+                            const angle = Math.random() * Math.PI * 2;
+                            const iceShard = new Bullet(
+                                this.x,
+                                this.y,
+                                angle,
+                                this.bulletSpeed * 0.8,
+                                this.bulletSize * 0.7,
+                                this.bulletColor,
+                                12,
+                                this.team,
+                                'freeze',
+                                { duration: 3000 }
+                            );
+                            projectiles.push(iceShard);
+                        }
+                        
+                        // Efeito especial de nevasca
+                        effects.push({
+                            x: this.x,
+                            y: this.y,
+                            radius: this.size + 60,
+                            duration: 3000,
+                            startTime: Date.now(),
+                            type: 'iceSpecial',
+                            team: this.team
+                        });
+                        
+                        this.specialEndTime = Date.now();
+                        break;
                 }
                 
                 // Iniciar cooldown
@@ -1318,15 +1841,30 @@
                 this.health -= amount;
                 this.updateHealthBar();
                 
+                // Mostrar efeito de dano
+                if (this.team === 'red') {
+                    showDamageEffect();
+                }
+                
                 if (this.health <= 0) {
                     // Ponto vai para o time que foi morto (inverso)
                     roundOver(this.team === 'red' ? 'blue' : 'red');
+                } else {
+                    // Tocar som de hit
+                    if (!muted) {
+                        hitSound.currentTime = 0;
+                        hitSound.play();
+                    }
                 }
             }
             
             heal(amount) {
                 this.health = Math.min(this.maxHealth, this.health + amount);
                 this.updateHealthBar();
+            }
+            
+            freeze(duration) {
+                this.frozenUntil = Date.now() + duration;
             }
             
             updateHealthBar() {
@@ -1352,7 +1890,9 @@
             
             destroy() {
                 // Remover elementos DOM quando o jogador for destruído
-               
+                if (this.faceElement.parentNode) {
+                    this.faceElement.parentNode.removeChild(this.faceElement);
+                }
                 if (this.aimArrow.parentNode) {
                     this.aimArrow.parentNode.removeChild(this.aimArrow);
                 }
@@ -1421,10 +1961,20 @@
             }
             
             draw() {
+                // Efeito de brilho para projéteis
+                if (this.effectType === 'freeze') {
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = 15;
+                }
+                
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
+                
+                // Resetar efeitos
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
             }
         }
 
@@ -1435,7 +1985,7 @@
                 this.size = 12;
                 this.speed = 2;
                 this.team = team;
-                this.color = isPoison ? '#0a0' : (team === 'red' ? '#a00' : '#00a');
+                this.color = isPoison ? '#4CAF50' : (team === 'red' ? '#D32F2F' : '#1976D2');
                 this.health = isPoison ? 45 : 65;
                 this.maxHealth = this.health;
                 this.damage = isPoison ? 30 : 29;
@@ -1467,7 +2017,7 @@
                             angle,
                             5,
                             8,
-                            '#0f0',
+                            '#4CAF50',
                             this.damage,
                             this.team,
                             'poison',
@@ -1540,7 +2090,7 @@
                 
                 ctx.fillStyle = '#333';
                 ctx.fillRect(this.x - barWidth/2, this.y - this.size - 8, barWidth, barHeight);
-                ctx.fillStyle = this.isPoison ? '#0f0' : '#f00';
+                ctx.fillStyle = this.isPoison ? '#4CAF50' : '#f00';
                 ctx.fillRect(this.x - barWidth/2, this.y - this.size - 8, barWidth * healthPercent, barHeight);
             }
             
@@ -1559,27 +2109,39 @@
                 
                 switch(type) {
                     case 'health20':
-                        this.color = '#0a0';
+                        this.color = '#4CAF50';
                         this.healAmount = 20;
                         break;
                     case 'health40':
-                        this.color = '#080';
+                        this.color = '#2E7D32';
                         this.healAmount = 40;
                         break;
                     case 'health80':
-                        this.color = '#050';
+                        this.color = '#1B5E20';
                         this.healAmount = 80;
                         break;
                     case 'infiniteAmmo':
-                        this.color = '#00f';
+                        this.color = '#FFC107';
                         this.duration = 5000;
+                        break;
+                    case 'speedBoost':
+                        this.color = '#00BCD4';
+                        this.duration = 7000;
                         break;
                 }
             }
             
             draw() {
+                // Efeito de brilho
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                
                 ctx.fillStyle = this.color;
                 ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                
+                // Resetar efeito de brilho
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
                 
                 // Desenhar borda
                 ctx.strokeStyle = '#fff';
@@ -1588,15 +2150,17 @@
                 
                 // Desenhar ícone
                 ctx.fillStyle = '#fff';
-                ctx.font = '12px Arial';
+                ctx.font = 'bold 12px Poppins';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 
                 if (this.type.includes('health')) {
                     ctx.fillText('+', this.x, this.y - 2);
                     ctx.fillText(this.healAmount, this.x, this.y + 10);
-                } else {
+                } else if (this.type === 'infiniteAmmo') {
                     ctx.fillText('∞', this.x, this.y + 3);
+                } else if (this.type === 'speedBoost') {
+                    ctx.fillText('⚡', this.x, this.y + 3);
                 }
             }
             
@@ -1616,6 +2180,13 @@
                             else if (player.type === 'knight') player.shotInterval = 550;
                             else if (player.type === 'necromancer') player.shotInterval = 650;
                             else if (player.type === 'assassin') player.shotInterval = 300;
+                            else if (player.type === 'iceMage') player.shotInterval = 800;
+                        }, this.duration);
+                    } else if (this.type === 'speedBoost') {
+                        const originalSpeed = player.speed;
+                        player.speed *= 1.5;
+                        setTimeout(() => {
+                            player.speed = originalSpeed;
                         }, this.duration);
                     }
                     return true;
@@ -1626,8 +2197,8 @@
 
         // Funções do jogo
         function spawnPowerUp() {
-            const types = ['health20', 'health40', 'health80', 'infiniteAmmo'];
-            const weights = [0.4, 0.3, 0.2, 0.1]; // Probabilidades para cada tipo
+            const types = ['health20', 'health40', 'health80', 'infiniteAmmo', 'speedBoost'];
+            const weights = [0.35, 0.25, 0.15, 0.15, 0.1]; // Probabilidades para cada tipo
             const totalWeight = weights.reduce((a, b) => a + b, 0);
             let random = Math.random() * totalWeight;
             let typeIndex = 0;
@@ -1655,8 +2226,19 @@
             
             // Mostrar mensagem do round
             roundWinner.textContent = winningTeam === 'red' ? 'Ponto Time Vermelho' : 'Ponto Time Azul';
-            roundWinner.style.color = winningTeam === 'red' ? '#f00' : '#00f';
+            roundWinner.style.color = winningTeam === 'red' ? '#FF5252' : '#4285F4';
             roundWinner.style.display = 'block';
+            
+            // Tocar som de vitória/derrota
+            if (!muted) {
+                if (winningTeam === 'red') {
+                    victorySound.currentTime = 0;
+                    victorySound.play();
+                } else {
+                    defeatSound.currentTime = 0;
+                    defeatSound.play();
+                }
+            }
             
             // Verificar vitória
             if (score[winningTeam] >= 3) {
@@ -1670,8 +2252,14 @@
             gameRunning = false;
             victoryScreen.style.display = 'flex';
             victoryText.textContent = `Vitória Time ${winningTeam === 'red' ? 'Vermelho' : 'Azul'}!`;
-            victoryText.style.color = winningTeam === 'red' ? '#f00' : '#00f';
-            victoryText.style.textShadow = `0 0 20px ${winningTeam === 'red' ? '#f00' : '#00f'}`;
+            victoryText.style.color = winningTeam === 'red' ? '#FF5252' : '#4285F4';
+            victoryText.style.textShadow = `0 0 20px ${winningTeam === 'red' ? '#FF5252' : '#4285F4'}`;
+            
+            // Tocar som de vitória
+            if (!muted) {
+                victorySound.currentTime = 0;
+                victorySound.play();
+            }
             
             // Efeito de confete
             for (let i = 0; i < 100; i++) {
@@ -1681,8 +2269,8 @@
                     confetti.style.width = '10px';
                     confetti.style.height = '10px';
                     confetti.style.backgroundColor = winningTeam === 'red' ? 
-                        (Math.random() > 0.5 ? '#f00' : '#f80') : 
-                        (Math.random() > 0.5 ? '#00f' : '#0af');
+                        (Math.random() > 0.5 ? '#FF5252' : '#FF9800') : 
+                        (Math.random() > 0.5 ? '#4285F4' : '#00BCD4');
                     confetti.style.left = `${Math.random() * 100}%`;
                     confetti.style.top = '-10px';
                     confetti.style.borderRadius = '50%';
@@ -1737,14 +2325,19 @@
                 player1Selected === 'archer' ? 'Arqueiro Real' : 
                 player1Selected === 'knight' ? 'Cavaleiro Negro' :
                 player1Selected === 'necromancer' ? 'Necromante' :
-                player1Selected === 'lancer' ? 'Lanceiro' : 'Assassino';
+                player1Selected === 'lancer' ? 'Lanceiro' : 
+                player1Selected === 'assassin' ? 'Assassino' : 'Mago do Gelo';
             
             player2Info.querySelector('.player-name').textContent = 
                 player2Selected === 'fireMage' ? 'Mago de Fogo' : 
                 player2Selected === 'archer' ? 'Arqueiro Real' : 
                 player2Selected === 'knight' ? 'Cavaleiro Negro' :
                 player2Selected === 'necromancer' ? 'Necromante' :
-                player2Selected === 'lancer' ? 'Lanceiro' : 'Assassino';
+                player2Selected === 'lancer' ? 'Lanceiro' : 
+                player2Selected === 'assassin' ? 'Assassino' : 'Mago do Gelo';
+                
+            // Efeito de transição
+            fadeIn();
         }
 
         function newMatch() {
@@ -1764,10 +2357,26 @@
             menu.style.display = 'flex';
             score = { red: 0, blue: 0 };
             updateScoreDisplay();
+            
+            // Parar música de fundo
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
         }
 
         function updateScoreDisplay() {
             scoreDisplay.textContent = `Vermelho ${score.red} - ${score.blue} Azul`;
+        }
+
+        function toggleMute() {
+            muted = !muted;
+            
+            if (muted) {
+                muteButton.textContent = '🔇';
+                backgroundMusic.pause();
+            } else {
+                muteButton.textContent = '🔊';
+                backgroundMusic.play();
+            }
         }
 
         function update() {
@@ -1843,6 +2452,8 @@
                                 type: 'poison',
                                 slow: bullet.effectData.slow
                             });
+                        } else if (bullet.effectType === 'freeze') {
+                            targetPlayer.freeze(bullet.effectData.duration);
                         }
                         
                         projectiles.splice(i, 1);
@@ -2017,7 +2628,7 @@
             
             // Desenhar borda vermelha (ring)
             const borderSize = 10;
-            ctx.strokeStyle = '#f00';
+            ctx.strokeStyle = '#FF5252';
             ctx.lineWidth = borderSize;
             ctx.strokeRect(borderSize/2, borderSize/2, config.width - borderSize, config.height - borderSize);
             
@@ -2051,7 +2662,7 @@
             // Desenhar efeitos
             for (const effect of effects) {
                 if (effect.type === 'aura') {
-                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.3)' : 'rgba(0, 100, 255, 0.3)';
+                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 82, 82, 0.3)' : 'rgba(66, 133, 244, 0.3)';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
                     ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
@@ -2071,7 +2682,7 @@
                     const radius = effect.radius * (1 + progress * 0.5);
                     
                     ctx.globalAlpha = alpha;
-                    ctx.fillStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.3)' : 'rgba(0, 100, 255, 0.3)';
+                    ctx.fillStyle = effect.team === 'red' ? 'rgba(255, 82, 82, 0.3)' : 'rgba(66, 133, 244, 0.3)';
                     ctx.beginPath();
                     ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
                     ctx.fill();
@@ -2085,7 +2696,7 @@
                     const endY = effect.y + Math.sin(effect.angle) * length;
                     
                     ctx.globalAlpha = alpha;
-                    ctx.strokeStyle = '#800080';
+                    ctx.strokeStyle = '#9C27B0';
                     ctx.lineWidth = 8;
                     ctx.beginPath();
                     ctx.moveTo(effect.x, effect.y);
@@ -2099,7 +2710,7 @@
                     const radius = effect.radius * (1 + progress * 0.5);
                     
                     ctx.globalAlpha = alpha;
-                    ctx.fillStyle = 'rgba(128, 0, 128, 0.3)';
+                    ctx.fillStyle = 'rgba(156, 39, 176, 0.3)';
                     ctx.beginPath();
                     ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
                     ctx.fill();
@@ -2113,7 +2724,7 @@
                     const endY = effect.y + Math.sin(effect.angle) * length;
                     
                     ctx.globalAlpha = alpha;
-                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.5)' : 'rgba(0, 100, 255, 0.5)';
+                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 82, 82, 0.5)' : 'rgba(66, 133, 244, 0.5)';
                     ctx.lineWidth = 5;
                     ctx.beginPath();
                     ctx.moveTo(effect.x, effect.y);
@@ -2127,11 +2738,23 @@
                     const radius = config.playerSize * 2;
                     
                     ctx.globalAlpha = alpha;
-                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.5)' : 'rgba(0, 100, 255, 0.5)';
+                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 82, 82, 0.5)' : 'rgba(66, 133, 244, 0.5)';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
                     ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
                     ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                } else if (effect.type === 'iceSpecial') {
+                    // Efeito especial do mago do gelo
+                    const progress = (Date.now() - effect.startTime) / effect.duration;
+                    const alpha = 0.7 * (1 - progress);
+                    const radius = effect.radius * (1 + progress * 0.5);
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = 'rgba(0, 180, 216, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
+                    ctx.fill();
                     ctx.globalAlpha = 1.0;
                 }
             }
@@ -2171,6 +2794,14 @@
             if (e.key === 'ç' && gameRunning && !gamePaused) {
                 player2.useSpecial();
             }
+            if (e.key === '.' && gameRunning && !gamePaused && player2.type === 'lancer') {
+                player2.attack();
+            }
+            
+            // Tecla M para mute
+            if (e.key === 'm') {
+                toggleMute();
+            }
         });
         
         window.addEventListener('keyup', (e) => {
@@ -2185,6 +2816,12 @@
             
             menu.style.display = 'none';
             gameUI.style.display = 'block';
+            
+            // Iniciar música de fundo
+            if (!muted) {
+                backgroundMusic.play();
+            }
+            
             newMatch();
         });
         
