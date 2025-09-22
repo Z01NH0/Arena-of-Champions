@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arena of Champions</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
             overflow: hidden;
             font-family: 'Poppins', sans-serif;
-            background-color: #111;
+            background: #0a0a1a;
             color: white;
             user-select: none;
         }
@@ -21,12 +26,12 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: radial-gradient(circle at center, #222, #111);
+            background: radial-gradient(circle at center, #1a1a2e, #0a0a1a);
         }
         
         #canvas {
             display: block;
-            background-color: #111;
+            background: #0a0a1a;
         }
         
         #menu {
@@ -35,34 +40,41 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(20,20,40,0.9) 100%);
+            background: linear-gradient(135deg, rgba(10, 10, 30, 0.95) 0%, rgba(30, 20, 50, 0.95) 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 10;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
         }
         
         #title {
-            font-size: 4rem;
+            font-size: 5rem;
             margin-bottom: 2rem;
             color: #fff;
-            text-shadow: 0 0 15px #4CAF50, 0 0 30px rgba(76, 175, 80, 0.5);
-            letter-spacing: 2px;
-            font-weight: 700;
-            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            text-shadow: 0 0 20px #00eeff, 0 0 40px rgba(0, 238, 255, 0.7);
+            letter-spacing: 4px;
+            font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(to right, #4CAF50, #8BC34A, #00eeff, #ff00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: glow 2s ease-in-out infinite alternate;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+            padding: 10px 30px;
+            border: 3px solid rgba(0, 238, 255, 0.3);
+            border-radius: 15px;
+            transform: perspective(500px) rotateX(10deg);
         }
         
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px #4CAF50, 0 0 20px rgba(76, 175, 80, 0.5);
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 0 0 10px #00eeff, 0 0 20px rgba(0, 238, 255, 0.5);
+                transform: perspective(500px) rotateX(10deg) scale(1);
             }
-            to {
-                text-shadow: 0 0 20px #4CAF50, 0 0 30px rgba(76, 175, 80, 0.8), 0 0 40px rgba(76, 175, 80, 0.6);
+            100% {
+                text-shadow: 0 0 25px #00eeff, 0 0 50px rgba(0, 238, 255, 0.8), 0 0 70px rgba(0, 238, 255, 0.6);
+                transform: perspective(500px) rotateX(10deg) scale(1.03);
             }
         }
         
@@ -78,55 +90,93 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(30, 30, 50, 0.7);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            transition: transform 0.3s;
+            background: rgba(20, 20, 40, 0.8);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s, box-shadow 0.4s;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff0, #f0f, #0ff, #0f0, #00f);
+            background-size: 400%;
+            z-index: -1;
+            border-radius: 20px;
+            animation: teamBorder 10s linear infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes teamBorder {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
         }
         
         .team:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+        
+        .team-red {
+            border-color: #FF5252;
+        }
+        
+        .team-blue {
+            border-color: #4285F4;
         }
         
         .team-title {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            font-weight: 600;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
         }
         
         .team-red .team-title {
             color: #FF5252;
-            text-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
+            background: rgba(255, 82, 82, 0.15);
+            box-shadow: 0 0 15px rgba(255, 82, 82, 0.4);
         }
         
         .team-blue .team-title {
             color: #4285F4;
-            text-shadow: 0 0 10px rgba(66, 133, 244, 0.5);
+            background: rgba(66, 133, 244, 0.15);
+            box-shadow: 0 0 15px rgba(66, 133, 244, 0.4);
         }
         
         .character-select {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 55px;
             justify-content: center;
-            max-width: 600px;
+            max-width: 800px;
         }
         
         .character {
-            width: 140px;
-            height: 180px;
-            background: linear-gradient(145deg, #2a2a3a, #1e1e2d);
-            border-radius: 12px;
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(145deg, #2a2a4a, #1e1e3a);
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 15px;
+            padding: 20px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
         }
@@ -143,7 +193,7 @@
             z-index: -1;
             opacity: 0;
             transition: 0.5s;
-            border-radius: 12px;
+            border-radius: 15px;
             animation: animate 20s linear infinite;
         }
         
@@ -158,13 +208,13 @@
         }
         
         .character:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+            transform: translateY(-10px) scale(1.08);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.4);
         }
         
         .character.selected {
-            box-shadow: 0 0 25px currentColor;
-            transform: translateY(-5px);
+            box-shadow: 0 0 30px currentColor;
+            transform: translateY(-8px);
         }
         
         .team-red .character.selected {
@@ -178,52 +228,73 @@
         }
         
         .character-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(145deg, #3a3a4a, #2e2e3d);
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(145deg, #3a3a5a, #2e2e4d);
             border-radius: 50%;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 40px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 45px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .character-icon::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transform: rotate(45deg);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
         .character:hover .character-icon {
-            transform: scale(1.1);
+            transform: scale(1.15);
+        }
+        
+        .character:hover .character-icon::after {
+            opacity: 1;
         }
         
         .character-name {
-            font-size: 18px;
-            margin-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 10px;
             text-align: center;
-            font-weight: 600;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         
         .character-desc {
-            font-size: 11px;
+            font-size: 12px;
             text-align: center;
-            color: #aaa;
+            color: #ccc;
             line-height: 1.4;
         }
         
         #startButton {
-            padding: 18px 50px;
-            font-size: 22px;
-            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            padding: 20px 60px;
+            font-size: 24px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A, #00eeff);
             color: white;
             border: none;
-            border-radius: 50px;
+            border-radius: 60px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            letter-spacing: 1px;
+            transition: all 0.4s;
+            font-weight: 700;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
             position: relative;
             overflow: hidden;
+            margin-top: 20px;
         }
         
         #startButton::before {
@@ -233,7 +304,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: 0.5s;
         }
         
@@ -242,12 +313,13 @@
         }
         
         #startButton:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+            transform: translateY(-5px) scale(1.08);
+            box-shadow: 0 12px 30px rgba(76, 175, 80, 0.7);
+            background: linear-gradient(45deg, #8BC34A, #4CAF50, #00eeff);
         }
         
         #startButton:active {
-            transform: translateY(1px);
+            transform: translateY(2px);
         }
         
         #gameUI {
@@ -256,45 +328,49 @@
             left: 0;
             right: 0;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             z-index: 5;
             display: none;
         }
         
         .health-bar {
-            width: 220px;
-            height: 25px;
-            background-color: #333;
-            border: 2px solid #444;
-            margin-bottom: 8px;
+            width: 250px;
+            height: 30px;
+            background-color: rgba(51, 51, 51, 0.8);
+            border: 3px solid #444;
+            margin-bottom: 10px;
             position: relative;
-            border-radius: 12px;
+            border-radius: 15px;
             overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
         .health-fill {
             height: 100%;
             width: 100%;
             transition: width 0.3s;
-            border-radius: 10px;
+            border-radius: 12px;
         }
         
         .team-red .health-fill {
             background: linear-gradient(to right, #FF5252, #FF8A80);
+            box-shadow: 0 0 10px rgba(255, 82, 82, 0.7);
         }
         
         .team-blue .health-fill {
             background: linear-gradient(to right, #4285F4, #8AB4F8);
+            box-shadow: 0 0 10px rgba(66, 133, 244, 0.7);
         }
         
         .special-bar {
-            width: 220px;
-            height: 18px;
-            background-color: #333;
+            width: 250px;
+            height: 22px;
+            background-color: rgba(51, 51, 51, 0.8);
             border: 2px solid #444;
-            margin-top: 12px;
-            border-radius: 9px;
+            margin-top: 15px;
+            border-radius: 11px;
             overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
         
         .special-fill {
@@ -302,17 +378,19 @@
             width: 0%;
             transition: width 0.3s;
             background: linear-gradient(to right, #FFC107, #FFD54F);
-            border-radius: 7px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.7);
         }
         
         .basic-attack-bar {
-            width: 220px;
-            height: 12px;
-            background-color: #333;
+            width: 250px;
+            height: 15px;
+            background-color: rgba(51, 51, 51, 0.8);
             border: 2px solid #444;
-            margin-top: 8px;
-            border-radius: 6px;
+            margin-top: 10px;
+            border-radius: 7px;
             overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
         
         .basic-attack-fill {
@@ -320,19 +398,21 @@
             width: 0%;
             transition: width 0.3s;
             background: linear-gradient(to right, #00E676, #69F0AE);
-            border-radius: 4px;
+            border-radius: 5px;
+            box-shadow: 0 0 8px rgba(0, 230, 118, 0.7);
         }
         
         .player-info {
             position: absolute;
             top: 20px;
-            width: 250px;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
+            width: 270px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.75);
+            border-radius: 15px;
             backdrop-filter: blur(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border-top: 3px solid;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border-top: 4px solid;
+            border-bottom: 4px solid;
         }
         
         #player1Info {
@@ -347,95 +427,21 @@
         
         .player-name {
             font-weight: bold;
-            margin-bottom: 8px;
-            font-size: 20px;
+            margin-bottom: 12px;
+            font-size: 22px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        
-        #gameOver {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            backdrop-filter: blur(5px);
-        }
-        
-        #gameOver h1 {
-            font-size: 4rem;
-            margin-bottom: 30px;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
-        }
-        
-        #winnerText {
-            font-size: 3rem;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 700;
-        }
-        
-        #restartButton {
-            padding: 18px 50px;
-            font-size: 22px;
-            background: linear-gradient(45deg, #4CAF50, #8BC34A);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
-        }
-        
-        #restartButton:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
-        }
-        
-        #menuButton {
-            padding: 18px 50px;
-            font-size: 22px;
-            background: linear-gradient(45deg, #f44336, #FF5252);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
-        }
-        
-        #menuButton:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.6);
-        }
-        
-        .instructions {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255,255,255,0.7);
-            font-size: 16px;
             text-align: center;
-            width: 100%;
-            padding: 0 20px;
         }
         
         .controls {
-            margin-top: 12px;
+            margin-top: 15px;
             font-size: 14px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.9);
             font-weight: 600;
+            text-align: center;
+            background: rgba(0,0,0,0.4);
+            padding: 8px;
+            border-radius: 8px;
         }
         
         #scoreDisplay {
@@ -443,17 +449,18 @@
             top: 30px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 28px;
+            font-size: 32px;
             color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 12px 30px;
-            border-radius: 50px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 35px;
+            border-radius: 60px;
             z-index: 5;
-            font-weight: 700;
+            font-weight: 800;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border: 2px solid #444;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border: 3px solid #444;
+            font-family: 'Orbitron', sans-serif;
         }
         
         #roundWinner {
@@ -461,24 +468,26 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 4rem;
+            font-size: 5rem;
             color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 30px 60px;
-            border-radius: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 40px 80px;
+            border-radius: 25px;
             z-index: 15;
             display: none;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            letter-spacing: 4px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
             animation: pulse 1.5s infinite;
+            text-shadow: 0 0 20px currentColor;
+            border: 3px solid;
         }
         
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
+            50% { transform: translate(-50%, -50%) scale(1.15); }
             100% { transform: translate(-50%, -50%) scale(1); }
         }
         
@@ -488,88 +497,89 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+            background: radial-gradient(circle, rgba(0,0,0,0.9) 0%, rgba(20,10,40,0.95) 100%);
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 25;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
         }
         
         #victoryText {
-            font-size: 5rem;
-            margin-bottom: 50px;
+            font-size: 6rem;
+            margin-bottom: 60px;
             color: gold;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-            font-weight: 700;
-            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
+            font-weight: 900;
+            letter-spacing: 4px;
             text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
             animation: victoryGlow 2s infinite alternate;
+            padding: 20px 50px;
+            border: 4px solid gold;
+            border-radius: 20px;
+            background: rgba(0,0,0,0.7);
         }
         
         @keyframes victoryGlow {
             from {
-                text-shadow: 0 0 10px gold, 0 0 20px rgba(255, 215, 0, 0.5);
+                text-shadow: 0 0 15px gold, 0 0 30px rgba(255, 215, 0, 0.6);
             }
             to {
-                text-shadow: 0 0 20px gold, 0 0 40px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.6);
+                text-shadow: 0 0 30px gold, 0 0 60px rgba(255, 215, 0, 0.9), 0 0 90px rgba(255, 215, 0, 0.7);
             }
         }
         
         #victoryButtons {
             display: flex;
-            gap: 30px;
+            gap: 40px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
-        .face {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+        #rematchButton, #menuButton2 {
+            padding: 20px 50px;
+            font-size: 22px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s;
+            font-weight: 700;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        #menuButton2 {
+            background: linear-gradient(45deg, #f44336, #FF5252);
+            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.5);
+        }
+        
+        #rematchButton:hover, #menuButton2:hover {
+            transform: translateY(-5px) scale(1.08);
+            box-shadow: 0 12px 30px rgba(76, 175, 80, 0.7);
+        }
+        
+        #menuButton2:hover {
+            box-shadow: 0 12px 30px rgba(244, 67, 54, 0.7);
+        }
+
+        .instructions {
             position: absolute;
-            top: 50%;
+            bottom: 40px;
             left: 50%;
-            transform: translate(-50%, -50%);
-            border: 3px solid;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.8);
+            font-size: 18px;
+            text-align: center;
+            width: 100%;
+            padding: 0 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
-
-        .fireMage-face {
-            background: linear-gradient(145deg, #FF9800, #FF5722);
-            border-color: #E65100;
-        }
-
-        .archer-face {
-            background: linear-gradient(145deg, #4CAF50, #2E7D32);
-            border-color: #1B5E20;
-        }
-
-        .knight-face {
-            background: linear-gradient(145deg, #424242, #212121);
-            border-color: #000;
-        }
-
-        .necromancer-face {
-            background: linear-gradient(145deg, #9C27B0, #7B1FA2);
-            border-color: #4A148C;
-        }
-
-        .lancer-face {
-            background: linear-gradient(145deg, #00BCD4, #00838F);
-            border-color: #006064;
-        }
-
-        .assassin-face {
-            background: linear-gradient(145deg, #795548, #5D4037);
-            border-color: #3E2723;
-        }
-
+        
         .aim-arrow {
             position: absolute;
             width: 20px;
@@ -578,6 +588,83 @@
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
             transform-origin: 50% 100%;
             filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+        
+        /* Efeitos de status */
+        .status-effect {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        .burn-effect {
+            background: radial-gradient(circle, rgba(255,100,0,0.8) 0%, rgba(255,50,0,0) 70%);
+            border-radius: 50%;
+            animation: burnPulse 0.5s infinite alternate;
+        }
+        
+        .poison-effect {
+            background: radial-gradient(circle, rgba(150,0,255,0.6) 0%, rgba(150,0,255,0) 70%);
+            border-radius: 50%;
+            animation: poisonPulse 1s infinite alternate;
+        }
+        
+        .freeze-effect {
+            background: radial-gradient(circle, rgba(0,180,216,0.6) 0%, rgba(0,180,216,0) 70%);
+            border-radius: 50%;
+            animation: freezePulse 1s infinite;
+        }
+        
+        .ice-zone {
+            position: absolute;
+            background: radial-gradient(circle, rgba(0,180,216,0.3) 0%, rgba(0,180,216,0) 70%);
+            border: 3px solid rgba(0,180,216,0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            box-shadow: 0 0 30px rgba(0,180,216,0.7);
+        }
+        
+        .ice-zone-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .ice-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            filter: blur(1px);
+            opacity: 0.7;
+            animation: snowFall linear infinite;
+        }
+        
+        @keyframes snowFall {
+            to {
+                transform: translateY(100%);
+            }
+        }
+        
+        @keyframes burnPulse {
+            from { transform: scale(0.8); opacity: 0.7; }
+            to { transform: scale(1.2); opacity: 1; }
+        }
+        
+        @keyframes poisonPulse {
+            from { transform: scale(0.9); opacity: 0.6; }
+            to { transform: scale(1.1); opacity: 0.9; }
+        }
+        
+        @keyframes freezePulse {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+            100% { transform: scale(0.9); opacity: 0.7; }
         }
         
         /* Efeitos de partículas */
@@ -604,22 +691,10 @@
             }
         }
         
-        /* Novo personagem - Mago do Gelo */
-        .iceMage-face {
-            background: linear-gradient(145deg, #00BCD4, #00838F);
-            border-color: #006064;
-        }
-        
         /* Efeito de congelamento */
         .frozen {
             filter: hue-rotate(180deg) brightness(1.5);
             animation: freezePulse 1s infinite;
-        }
-        
-        @keyframes freezePulse {
-            0% { opacity: 0.8; }
-            50% { opacity: 1; }
-            100% { opacity: 0.8; }
         }
         
         /* Botão de mute */
@@ -627,24 +702,26 @@
             position: absolute;
             bottom: 20px;
             right: 20px;
-            width: 50px;
-            height: 50px;
-            background: rgba(0,0,0,0.5);
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.6);
             border-radius: 50%;
-            border: none;
+            border: 2px solid rgba(255,255,255,0.3);
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
             z-index: 100;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
         #muteButton:hover {
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         }
         
         /* Efeitos de transição */
@@ -673,11 +750,60 @@
             pointer-events: none;
             opacity: 0;
         }
+        
+        /* Modelos dos personagens */
+        .character-model {
+            position: absolute;
+            border-radius: 50%;
+            box-shadow: 0 0 20px currentColor;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            text-shadow: 0 0 10px rgba(0,0,0,0.7);
+            overflow: hidden;
+        }
+        
+        .fireMage-model {
+            background: radial-gradient(circle, #FF9800, #FF5722);
+            border: 3px solid #E65100;
+        }
+        
+        .archer-model {
+            background: radial-gradient(circle, #4CAF50, #2E7D32);
+            border: 3px solid #1B5E20;
+        }
+        
+        .knight-model {
+            background: radial-gradient(circle, #616161, #212121);
+            border: 3px solid #000;
+        }
+        
+        .necromancer-model {
+            background: radial-gradient(circle, #9C27B0, #7B1FA2);
+            border: 3px solid #4A148C;
+        }
+        
+        .lancer-model {
+            background: radial-gradient(circle, #00BCD4, #00838F);
+            border: 3px solid #006064;
+        }
+        
+        .assassin-model {
+            background: radial-gradient(circle, #795548, #5D4037);
+            border: 3px solid #3E2723;
+        }
+        
+        .iceMage-model {
+            background: radial-gradient(circle, #00B4D8, #0077B6);
+            border: 3px solid #005B8D;
+        }
     </style>
 </head>
 <body>
     <div id="gameContainer">
-        <div class="particles" id="particles"></div>
+        
         <canvas id="canvas"></canvas>
         
         <div id="gameUI">
@@ -722,37 +848,37 @@
                         <div class="character" data-character="fireMage">
                             <div class="character-icon">🔥</div>
                             <div class="character-name">Mago de Fogo</div>
-                            <div class="character-desc">Atira bolas de fogo que causam queimadura. Especial: Explosão de fogo em área.</div>
+                            <div class="character-desc">Atira bolas de fogo. Especial: Explosão de fogo em área.</div>
                         </div>
                         <div class="character" data-character="archer">
                             <div class="character-icon">🏹</div>
                             <div class="character-name">Arqueiro Real</div>
-                            <div class="character-desc">Atira flechas rapidamente. Especial: Chuva de flechas precisas.</div>
+                            <div class="character-desc">Atira flechas. Especial: Chuva de flechas precisas.</div>
                         </div>
                         <div class="character" data-character="knight">
                             <div class="character-icon">⚔️</div>
                             <div class="character-name">Cavaleiro Negro</div>
-                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Modo invencível com espada poderosa.</div>
+                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Modo invencível com espada.</div>
                         </div>
                         <div class="character" data-character="necromancer">
                             <div class="character-icon">💀</div>
                             <div class="character-name">Necromante</div>
-                            <div class="character-desc">Invoca criaturas dos mortos. Especial: Invoca 3 monstros (1 pode ser venenoso).</div>
+                            <div class="character-desc">Atira Projétil que se Divide. Especial: Invoca 3 monstros.</div>
                         </div>
                         <div class="character" data-character="lancer">
                             <div class="character-icon">🔱</div>
                             <div class="character-name">Lanceiro</div>
-                            <div class="character-desc">Ataques corpo-a-corpo poderosos. Especial: Investida invulnerável.</div>
+                            <div class="character-desc">Ataques de Lança. Especial: Investida Nocauteadora.</div>
                         </div>
                         <div class="character" data-character="assassin">
                             <div class="character-icon">🗡️</div>
                             <div class="character-name">Assassino</div>
-                            <div class="character-desc">Ataques rápidos e furtivos. Especial: Invisibilidade e velocidade aumentada.</div>
+                            <div class="character-desc">Ataques de Perto com Pequeno Dash. Especial: Se Moverá mais Rapido e Ataque causará mais Dano.</div>
                         </div>
                         <div class="character" data-character="iceMage">
                             <div class="character-icon">❄️</div>
                             <div class="character-name">Mago do Gelo</div>
-                            <div class="character-desc">Atira projéteis que congelam. Especial: Nevasca que reduz velocidade.</div>
+                            <div class="character-desc">Atira projéteis de Gelo. Especial: Área congelante.</div>
                         </div>
                     </div>
                 </div>
@@ -763,37 +889,37 @@
                         <div class="character" data-character="fireMage">
                             <div class="character-icon">🔥</div>
                             <div class="character-name">Mago de Fogo</div>
-                            <div class="character-desc">Atira bolas de fogo que causam queimadura. Especial: Explosão de fogo em área.</div>
+                            <div class="character-desc">Atira bolas de fogo que Causam Queimadura. Especial: Explosão de fogo em área.</div>
                         </div>
                         <div class="character" data-character="archer">
                             <div class="character-icon">🏹</div>
                             <div class="character-name">Arqueiro Real</div>
-                            <div class="character-desc">Atira flechas rapidamente. Especial: Chuva de flechas precisas.</div>
+                            <div class="character-desc">Atira flechas. Especial: Chuva de flechas precisas.</div>
                         </div>
                         <div class="character" data-character="knight">
                             <div class="character-icon">⚔️</div>
                             <div class="character-name">Cavaleiro Negro</div>
-                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Modo invencível com espada poderosa.</div>
+                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Modo invencível com espada.</div>
                         </div>
                         <div class="character" data-character="necromancer">
                             <div class="character-icon">💀</div>
                             <div class="character-name">Necromante</div>
-                            <div class="character-desc">Invoca criaturas dos mortos. Especial: Invoca 3 monstros (1 pode ser venenoso).</div>
+                            <div class="character-desc">Atira Projétil que se Divide. Especial: Invoca 3 monstros.</div>
                         </div>
                         <div class="character" data-character="lancer">
                             <div class="character-icon">🔱</div>
                             <div class="character-name">Lanceiro</div>
-                            <div class="character-desc">Ataques corpo-a-corpo poderosos. Especial: Investida invulnerável.</div>
+                            <div class="character-desc">Ataques de Lança de Perto. Especial: Investida Nocauteadora.</div>
                         </div>
                         <div class="character" data-character="assassin">
                             <div class="character-icon">🗡️</div>
                             <div class="character-name">Assassino</div>
-                            <div class="character-desc">Ataques rápidos e furtivos. Especial: Invisibilidade e velocidade aumentada.</div>
+                            <div class="character-desc">Ataques de Perto com Pequeno Dash. Especial: Se Moverá mais Rapido e Ataque causará mais Dano.</div>
                         </div>
                         <div class="character" data-character="iceMage">
                             <div class="character-icon">❄️</div>
                             <div class="character-name">Mago do Gelo</div>
-                            <div class="character-desc">Atira projéteis que congelam. Especial: Nevasca que reduz velocidade.</div>
+                            <div class="character-desc">Atira projéteis de Gelo. Especial: Área congelante.</div>
                         </div>
                     </div>
                 </div>
@@ -856,8 +982,8 @@
             width: 800,
             height: 600,
             playerSpeed: 5,
-            playerSize: 20,
-            powerUpSpawnRate: 15000, // 15 segundos
+            playerSize: 25,
+            powerUpSpawnRate: 15000,
             specialCooldown: {
                 fireMage: 15000,
                 archer: 15000,
@@ -865,7 +991,7 @@
                 necromancer: 20000,
                 lancer: 17000,
                 assassin: 15000,
-                iceMage: 16000
+                iceMage: 25000 
             },
             basicAttackCooldown: {
                 fireMage: 700,
@@ -873,7 +999,7 @@
                 knight: 550,
                 necromancer: 650,
                 lancer: 1000,
-                assassin: 300,
+                assassin: 400,
                 iceMage: 800
             }
         };
@@ -919,6 +1045,7 @@
         let monsters = [];
         let effects = [];
         let powerUps = [];
+        let iceZones = [];
         let lastPowerUpSpawn = 0;
         let keys = {};
         let player1Selected = null;
@@ -945,34 +1072,7 @@
             iceMage: '#00B4D8'      // Azul gelo
         };
 
-        // Criar partículas de fundo
-        function createParticles() {
-            particles = [];
-            const particleCount = Math.floor(window.innerWidth * window.innerHeight / 1000);
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                const size = Math.random() * 3 + 1;
-                const posX = Math.random() * window.innerWidth;
-                const posY = Math.random() * window.innerHeight;
-                const opacity = Math.random() * 0.5 + 0.1;
-                const duration = Math.random() * 20 + 10;
-                const delay = Math.random() * 20;
-                
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${posX}px`;
-                particle.style.top = `${posY}px`;
-                particle.style.opacity = opacity;
-                particle.style.animationDuration = `${duration}s`;
-                particle.style.animationDelay = `${delay}s`;
-                
-                particlesContainer.appendChild(particle);
-                particles.push(particle);
-            }
-        }
+        
 
         // Efeito de transição
         function fadeIn() {
@@ -1023,21 +1123,26 @@
                 this.lastBasicAttackTime = 0;
                 this.basicAttackReady = true;
                 this.aimAngle = team === 'red' ? 0 : Math.PI;
-                this.faceElement = document.createElement('div');
-                this.faceElement.className = `face ${type}-face`;
-                if (type === 'fireMage') this.faceElement.textContent = '🔥';
-                else if (type === 'archer') this.faceElement.textContent = '🏹';
-                else if (type === 'knight') this.faceElement.textContent = '⚔️';
-                else if (type === 'necromancer') this.faceElement.textContent = '💀';
-                else if (type === 'lancer') this.faceElement.textContent = '🔱';
-                else if (type === 'assassin') this.faceElement.textContent = '🗡️';
-                else if (type === 'iceMage') this.faceElement.textContent = '❄️';
-                document.body.appendChild(this.faceElement);
                 this.aimArrow = document.createElement('div');
                 this.aimArrow.className = 'aim-arrow';
                 document.body.appendChild(this.aimArrow);
                 this.slowed = false;
-                this.frozenUntil = 0;
+                this.slowAmount = 0;
+                this.slowEndTime = 0;
+                this.inIceZone = false;
+                this.lastIceZoneTick = 0;
+                this.iceZoneSlowAmount = 0;
+                this.effects = [];
+                this.model = document.createElement('div');
+                this.model.className = `character-model ${type}-model`;
+                if (type === 'fireMage') this.model.textContent = '🔥';
+                else if (type === 'archer') this.model.textContent = '🏹';
+                else if (type === 'knight') this.model.textContent = '⚔️';
+                else if (type === 'necromancer') this.model.textContent = '💀';
+                else if (type === 'lancer') this.model.textContent = '🔱';
+                else if (type === 'assassin') this.model.textContent = '🗡️';
+                else if (type === 'iceMage') this.model.textContent = '❄️';
+                document.body.appendChild(this.model);
                 
                 // Configurações específicas por personagem
                 switch(type) {
@@ -1092,20 +1197,23 @@
                         break;
                     case 'assassin':
                         this.color = characterColors.assassin;
-                        this.bulletColor = team === 'red' ? '#5D4037' : '#8D6E63';
-                        this.bulletSize = 5;
-                        this.shotInterval = 300;
+                        this.speed = config.playerSpeed * 1.4;
+                        this.attackCooldown = 500;
+                        this.lastAttackTime = 0;
+                        this.attacking = false;
+                        this.attackDuration = 200;
                         this.damage = 45;
                         this.maxHealth = 220;
                         this.health = 220;
-                        this.speed = config.playerSpeed * 1.3;
+                        this.knifeLength = this.size * 1.8;
+                        this.bonusDamageNextAttack = false;
                         break;
                     case 'iceMage':
                         this.color = characterColors.iceMage;
                         this.bulletColor = team === 'red' ? '#00B4D8' : '#90E0EF';
                         this.bulletSize = 9;
                         this.shotInterval = 800;
-                        this.damage = 18;
+                        this.damage = 25;
                         this.maxHealth = 230;
                         this.health = 230;
                         break;
@@ -1130,6 +1238,35 @@
                     } else {
                         this.speed = config.playerSpeed;
                     }
+                }
+                
+                // Verificar se está em uma zona de gelo
+                this.inIceZone = false;
+                for (const zone of iceZones) {
+                    if (zone.team !== this.team) {
+                        const dx = this.x - zone.x;
+                        const dy = this.y - zone.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < zone.radius) {
+                            this.inIceZone = true;
+                            this.iceZoneSlowAmount = zone.slowAmount;
+                            
+                            // Aplicar dano a cada segundo
+                            const now = Date.now();
+                            if (now - this.lastIceZoneTick > 1000) {
+                                this.takeDamage(zone.damagePerSecond);
+                                this.lastIceZoneTick = now;
+                            }
+                            
+                            break;
+                        }
+                    }
+                }
+                
+                // Aplicar slow da zona de gelo
+                if (this.inIceZone) {
+                    this.speed = this.speed * (1 - this.iceZoneSlowAmount);
                 }
                 
                 // Atualizar cooldown do ataque básico
@@ -1186,9 +1323,9 @@
                 this.x = Math.max(this.size + borderSize, Math.min(config.width - this.size - borderSize, this.x));
                 this.y = Math.max(this.size + borderSize, Math.min(config.height - this.size - borderSize, this.y));
                 
-                // Atualizar posição do rosto e seta de mira
-                this.faceElement.style.left = `${this.x + window.scrollX - 30}px`;
-                this.faceElement.style.top = `${this.y + window.scrollY - 30}px`;
+                // Atualizar posição do modelo e seta de mira
+                this.model.style.left = `${this.x + window.scrollX - this.size}px`;
+                this.model.style.top = `${this.y + window.scrollY - this.size}px`;
                 this.aimArrow.style.left = `${this.x + window.scrollX + Math.cos(this.aimAngle) * (this.size + 15) - 10}px`;
                 this.aimArrow.style.top = `${this.y + window.scrollY + Math.sin(this.aimAngle) * (this.size + 15) - 10}px`;
                 this.aimArrow.style.transform = `rotate(${this.aimAngle}rad)`;
@@ -1206,7 +1343,6 @@
                         this.invulnerable = false;
                         this.speed = config.playerSpeed * 1.15;
                     } else if (this.type === 'assassin') {
-                        this.visible = true;
                         this.speed = config.playerSpeed * 1.3;
                     } else if (this.type === 'iceMage') {
                         // Nada a fazer ao terminar o especial
@@ -1227,8 +1363,8 @@
             draw() {
                 if (!this.visible) return;
                 
-                // Desenhar jogador com transparência se estiver invulnerável ou invisível
-                if (this.invulnerable || (this.type === 'assassin' && this.specialActive)) {
+                // Desenhar jogador com transparência se estiver invulnerável
+                if (this.invulnerable) {
                     ctx.globalAlpha = 0.6;
                 }
                 
@@ -1245,6 +1381,12 @@
                 if (this.frozenUntil > Date.now()) {
                     ctx.shadowColor = '#00B4D8';
                     ctx.shadowBlur = 15;
+                }
+                
+                // Efeito de brilho para personagens com bônus de dano
+                if (this.type === 'assassin' && this.bonusDamageNextAttack) {
+                    ctx.shadowColor = '#795548';
+                    ctx.shadowBlur = 20;
                 }
                 
                 ctx.beginPath();
@@ -1446,7 +1588,7 @@
                         break;
                         
                     case 'assassin':
-                        // Assassino dá um dash e atira uma faca
+                        // Assassino dá um dash e ataca com faca de curto alcance
                         const dashDistance = 30;
                         this.x += Math.cos(angle) * dashDistance;
                         this.y += Math.sin(angle) * dashDistance;
@@ -1456,27 +1598,44 @@
                         this.x = Math.max(this.size + borderSize, Math.min(config.width - this.size - borderSize, this.x));
                         this.y = Math.max(this.size + borderSize, Math.min(config.height - this.size - borderSize, this.y));
                         
-                        const dagger = new Bullet(
-                            this.x,
-                            this.y,
-                            angle,
-                            this.bulletSpeed * 1.8,
-                            this.bulletSize,
-                            this.bulletColor,
-                            this.damage,
-                            this.team,
-                            'bleed',
-                            { damage: 7, duration: 2000 }
-                        );
-                        projectiles.push(dagger);
-                        
-                        // Cooldown maior se acertar o oponente
+                        // Verificar se acertou o oponente
                         const opponent = this.team === 'red' ? player2 : player1;
                         const distance = Math.sqrt(
                             Math.pow(opponent.x - this.x, 2) + 
                             Math.pow(opponent.y - this.y, 2)
                         );
                         
+                        if (distance < opponent.size + this.size + 20) {
+                            let damage = this.damage;
+                            let effect = null;
+                            
+                            // Se tiver bônus de dano da ultimate
+                            if (this.bonusDamageNextAttack) {
+                                damage *= 1.5; // +50% de dano
+                                effect = {
+                                    type: 'poison',
+                                    data: { damage: 5, duration: 3000 }
+                                };
+                                this.bonusDamageNextAttack = false;
+                            }
+                            
+                            opponent.takeDamage(damage);
+                            
+                            // Aplicar efeito se houver
+                            if (effect) {
+                                effects.push({
+                                    target: opponent,
+                                    damage: effect.data.damage,
+                                    interval: 1000,
+                                    lastHitTime: Date.now(),
+                                    duration: effect.data.duration,
+                                    startTime: Date.now(),
+                                    type: effect.type
+                                });
+                            }
+                        }
+                        
+                        // Cooldown maior se acertar o oponente
                         if (distance < opponent.size + this.size + 20) {
                             this.shotInterval = 1500;
                         } else {
@@ -1485,7 +1644,7 @@
                         break;
                         
                     case 'iceMage':
-                        // Mago do Gelo atira projéteis que congelam
+                        // Mago do Gelo atira projéteis que reduzem velocidade em 20%
                         const iceBall = new Bullet(
                             this.x,
                             this.y,
@@ -1495,8 +1654,8 @@
                             this.bulletColor,
                             this.damage,
                             this.team,
-                            'freeze',
-                            { duration: 2000 }
+                            'slow',
+                            { slow: 0.3, duration: 3000 }
                         );
                         projectiles.push(iceBall);
                         break;
@@ -1706,9 +1865,9 @@
                         break;
                         
                     case 'lancer':
-                        // Investida violenta
+                        // Investida violenta com +100% de velocidade
                         this.invulnerable = true;
-                        this.speed = config.playerSpeed * 2.5;
+                        this.speed = config.playerSpeed * 2.3; // +100% de velocidade
                         this.specialEndTime = Date.now() + 2000; // 2 segundos de investida
                         
                         // Verificar colisão durante a investida
@@ -1760,34 +1919,16 @@
                         break;
                         
                     case 'assassin':
-                        // Invisibilidade e velocidade aumentada
-                        this.visible = false;
-                        this.speed = config.playerSpeed * 2; // 100% mais rápido
-                        this.specialEndTime = Date.now() + 2400; // 2.4 segundos
-                        
-                        // Atirar 5 adagas envenenadas em direções aleatórias
-                        for (let i = 0; i < 5; i++) {
-                            const angle = Math.random() * Math.PI * 2;
-                            const dagger = new Bullet(
-                                this.x,
-                                this.y,
-                                angle,
-                                this.bulletSpeed * 1.5,
-                                this.bulletSize,
-                                this.bulletColor,
-                                10,
-                                this.team,
-                                'poison',
-                                { damage: 5, duration: 5000, slow: 0.25 }
-                            );
-                            projectiles.push(dagger);
-                        }
+                        // Próximo ataque causa +50% de dano e veneno
+                        this.bonusDamageNextAttack = true;
+                        this.speed = config.playerSpeed * 1.8; // Aumento de velocidade
+                        this.specialEndTime = Date.now() + 5000; // 5 segundos para usar o ataque
                         
                         // Efeito especial de assassin
                         effects.push({
                             x: this.x,
                             y: this.y,
-                            duration: 2400,
+                            duration: 5000,
                             startTime: Date.now(),
                             type: 'assassinSpecial',
                             team: this.team
@@ -1795,23 +1936,50 @@
                         break;
                         
                     case 'iceMage':
-                        // Nevasca que reduz velocidade
+                        // Criar zona de gelo que causa slow e dano
+                        const iceZone = {
+                            x: this.x,
+                            y: this.y,
+                            radius: 150,
+                            slowAmount: 0.7, // 40% de slow
+                            damagePerSecond: 10,
+                            duration: 15000, // 15 segundos
+                            startTime: Date.now(),
+                            team: this.team
+                        };
+                        
+                        iceZones.push(iceZone);
+                        
+                        // Criar partículas de neve para a zona de gelo
+                        const particlesContainer = document.createElement('div');
+                        particlesContainer.className = 'ice-zone-particles';
+                        particlesContainer.style.width = `${iceZone.radius * 2}px`;
+                        particlesContainer.style.height = `${iceZone.radius * 2}px`;
+                        particlesContainer.style.left = `${iceZone.x - iceZone.radius}px`;
+                        particlesContainer.style.top = `${iceZone.y - iceZone.radius}px`;
+                        document.getElementById('gameContainer').appendChild(particlesContainer);
+                        
+                        // Adicionar partículas de neve
                         for (let i = 0; i < 30; i++) {
-                            const angle = Math.random() * Math.PI * 2;
-                            const iceShard = new Bullet(
-                                this.x,
-                                this.y,
-                                angle,
-                                this.bulletSpeed * 0.8,
-                                this.bulletSize * 0.7,
-                                this.bulletColor,
-                                12,
-                                this.team,
-                                'freeze',
-                                { duration: 3000 }
-                            );
-                            projectiles.push(iceShard);
+                            const particle = document.createElement('div');
+                            particle.className = 'ice-particle';
+                            particle.style.left = `${Math.random() * 100}%`;
+                            particle.style.top = `${Math.random() * 100}%`;
+                            particle.style.animationDuration = `${2 + Math.random() * 3}s`;
+                            particle.style.animationDelay = `${Math.random() * 5}s`;
+                            particlesContainer.appendChild(particle);
                         }
+                        
+                        // Remover a zona de gelo após a duração
+                        setTimeout(() => {
+                            const index = iceZones.indexOf(iceZone);
+                            if (index > -1) {
+                                iceZones.splice(index, 1);
+                            }
+                            if (particlesContainer.parentNode) {
+                                particlesContainer.parentNode.removeChild(particlesContainer);
+                            }
+                        }, iceZone.duration);
                         
                         // Efeito especial de nevasca
                         effects.push({
@@ -1867,6 +2035,16 @@
                 this.frozenUntil = Date.now() + duration;
             }
             
+            applySlow(amount, duration) {
+                this.slowed = true;
+                this.slowAmount = amount;
+                this.slowEndTime = Date.now() + duration;
+                
+                setTimeout(() => {
+                    this.slowed = false;
+                }, duration);
+            }
+            
             updateHealthBar() {
                 const healthBar = this.team === 'red' ? 
                     player1Info.querySelector('.health-fill') : 
@@ -1890,8 +2068,8 @@
             
             destroy() {
                 // Remover elementos DOM quando o jogador for destruído
-                if (this.faceElement.parentNode) {
-                    this.faceElement.parentNode.removeChild(this.faceElement);
+                if (this.model.parentNode) {
+                    this.model.parentNode.removeChild(this.model);
                 }
                 if (this.aimArrow.parentNode) {
                     this.aimArrow.parentNode.removeChild(this.aimArrow);
@@ -1962,7 +2140,7 @@
             
             draw() {
                 // Efeito de brilho para projéteis
-                if (this.effectType === 'freeze') {
+                if (this.effectType === 'freeze' || this.effectType === 'slow') {
                     ctx.shadowColor = this.color;
                     ctx.shadowBlur = 15;
                 }
@@ -2227,6 +2405,7 @@
             // Mostrar mensagem do round
             roundWinner.textContent = winningTeam === 'red' ? 'Ponto Time Vermelho' : 'Ponto Time Azul';
             roundWinner.style.color = winningTeam === 'red' ? '#FF5252' : '#4285F4';
+            roundWinner.style.borderColor = winningTeam === 'red' ? '#FF5252' : '#4285F4';
             roundWinner.style.display = 'block';
             
             // Tocar som de vitória/derrota
@@ -2299,9 +2478,18 @@
         }
 
         function resetGame() {
-            // Remover elementos de rosto e seta dos jogadores anteriores
+            // Remover elementos de modelo e seta dos jogadores anteriores
             if (player1) player1.destroy();
             if (player2) player2.destroy();
+            
+            // Remover zonas de gelo
+            iceZones = [];
+            const iceZoneParticles = document.querySelectorAll('.ice-zone-particles');
+            iceZoneParticles.forEach(particle => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            });
             
             // Posicionar jogadores em lados opostos
             player1 = new Player(player1Selected, 'red', config.width * 0.25, config.height / 2);
@@ -2347,9 +2535,18 @@
         }
 
         function returnToMenu() {
-            // Remover elementos de rosto e seta
+            // Remover elementos de modelo e seta
             if (player1) player1.destroy();
             if (player2) player2.destroy();
+            
+            // Remover zonas de gelo
+            iceZones = [];
+            const iceZoneParticles = document.querySelectorAll('.ice-zone-particles');
+            iceZoneParticles.forEach(particle => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            });
             
             gameRunning = false;
             victoryScreen.style.display = 'none';
@@ -2454,6 +2651,8 @@
                             });
                         } else if (bullet.effectType === 'freeze') {
                             targetPlayer.freeze(bullet.effectData.duration);
+                        } else if (bullet.effectType === 'slow') {
+                            targetPlayer.applySlow(bullet.effectData.slow, bullet.effectData.duration);
                         }
                         
                         projectiles.splice(i, 1);
@@ -2623,7 +2822,17 @@
             if (!gameRunning) return;
             
             // Limpar tela
-            ctx.fillStyle = '#111';
+            ctx.fillStyle = '#0a0a1a';
+            ctx.fillRect(0, 0, config.width, config.height);
+            
+            // Desenhar gradiente de fundo
+            const gradient = ctx.createRadialGradient(
+                config.width / 2, config.height / 2, 0,
+                config.width / 2, config.height / 2, config.width / 2
+            );
+            gradient.addColorStop(0, 'rgba(26, 26, 46, 0.8)');
+            gradient.addColorStop(1, 'rgba(10, 10, 26, 0.9)');
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, config.width, config.height);
             
             // Desenhar borda vermelha (ring)
@@ -2633,12 +2842,28 @@
             ctx.strokeRect(borderSize/2, borderSize/2, config.width - borderSize, config.height - borderSize);
             
             // Desenhar divisão da arena
-            ctx.strokeStyle = '#333';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
             ctx.lineWidth = 2;
+            ctx.setLineDash([10, 10]);
             ctx.beginPath();
             ctx.moveTo(config.width / 2, 0);
             ctx.lineTo(config.width / 2, config.height);
             ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Desenhar zonas de gelo
+            for (const zone of iceZones) {
+                ctx.fillStyle = 'rgba(0, 180, 216, 0.2)';
+                ctx.beginPath();
+                ctx.arc(zone.x, zone.y, zone.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = 'rgba(0, 180, 216, 0.6)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(zone.x, zone.y, zone.radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
             
             // Desenhar power-ups
             for (const powerUp of powerUps) {
@@ -2839,2289 +3064,7 @@
             returnToMenu();
         });
         
-        characterElements.forEach(el => {
-            el.addEventListener('click', () => {
-                const team = el.closest('.team').classList.contains('team-red') ? 'red' : 'blue';
-                const character = el.dataset.character;
-                
-                if (team === 'red') {
-                    // Deselecionar personagem anterior do time vermelho
-                    document.querySelectorAll('.team-red .character').forEach(c => 
-                        c.classList.remove('selected'));
-                    player1Selected = character;
-                } else {
-                    // Deselecionar personagem anterior do time azul
-                    document.querySelectorAll('.team-blue .character').forEach(c => 
-                        c.classList.remove('selected'));
-                    player2Selected = character;
-                }
-                
-                el.classList.add('selected');
-            });
-        });
-
-        // Inicialização
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            config.width = canvas.width;
-            config.height = canvas.height;
-        }
-
-        resizeCanvas();
-        gameUI.style.display = 'none';
-        gameOverScreen.style.display = 'none';
-        victoryScreen.style.display = 'none';
-        roundWinner.style.display = 'none';
-        gameLoop();
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arena of Champions</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            background-color: #222;
-            color: white;
-        }
-        
-        #gameContainer {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-        
-        #canvas {
-            display: block;
-            background-color: #111;
-        }
-        
-        #menu {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
-        
-        #title {
-            font-size: 48px;
-            margin-bottom: 40px;
-            color: #f0f0f0;
-            text-shadow: 0 0 10px #fff;
-        }
-        
-        .team-select {
-            display: flex;
-            gap: 50px;
-            margin-bottom: 40px;
-        }
-        
-        .team {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .team-title {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        
-        .team-red .team-title {
-            color: #f00;
-        }
-        
-        .team-blue .team-title {
-            color: #00f;
-        }
-        
-        .character-select {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            max-width: 500px;
-        }
-        
-        .character {
-            width: 120px;
-            height: 160px;
-            background-color: #333;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .character:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px #555;
-        }
-        
-        .character.selected {
-            box-shadow: 0 0 20px currentColor;
-        }
-        
-        .team-red .character.selected {
-            border: 2px solid #f00;
-            color: #f00;
-        }
-        
-        .team-blue .character.selected {
-            border: 2px solid #00f;
-            color: #00f;
-        }
-        
-        .character-icon {
-            width: 70px;
-            height: 70px;
-            background-color: #555;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-        }
-        
-        .character-name {
-            font-size: 16px;
-            margin-bottom: 5px;
-            text-align: center;
-        }
-        
-        .character-desc {
-            font-size: 10px;
-            text-align: center;
-            color: #aaa;
-        }
-        
-        #startButton {
-            padding: 15px 40px;
-            font-size: 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        #startButton:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-        
-        #gameUI {
-            position: absolute;
-            top: 10px;
-            left: 0;
-            right: 0;
-            color: white;
-            font-size: 18px;
-            z-index: 5;
-            display: none;
-        }
-        
-        .health-bar {
-            width: 200px;
-            height: 20px;
-            background-color: #333;
-            border: 2px solid #555;
-            margin-bottom: 5px;
-            position: relative;
-        }
-        
-        .health-fill {
-            height: 100%;
-            width: 100%;
-            background-color: #f00;
-            transition: width 0.3s;
-        }
-        
-        .team-red .health-fill {
-            background-color: #f00;
-        }
-        
-        .team-blue .health-fill {
-            background-color: #00f;
-        }
-        
-        .special-bar {
-            width: 200px;
-            height: 15px;
-            background-color: #333;
-            border: 2px solid #555;
-            margin-top: 10px;
-        }
-        
-        .special-fill {
-            height: 100%;
-            width: 0%;
-            background-color: #00f;
-            transition: width 0.3s;
-        }
-        
-        .basic-attack-bar {
-            width: 200px;
-            height: 10px;
-            background-color: #333;
-            border: 2px solid #555;
-            margin-top: 5px;
-        }
-        
-        .basic-attack-fill {
-            height: 100%;
-            width: 0%;
-            background-color: #0f0;
-            transition: width 0.3s;
-        }
-        
-        .player-info {
-            position: absolute;
-            top: 10px;
-            width: 220px;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 5px;
-        }
-        
-        #player1Info {
-            left: 10px;
-            border-left: 3px solid #f00;
-        }
-        
-        #player2Info {
-            right: 10px;
-            border-right: 3px solid #00f;
-        }
-        
-        .player-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        #gameOver {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-        }
-        
-        #gameOver h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        
-        #winnerText {
-            font-size: 36px;
-            margin-bottom: 30px;
-        }
-        
-        #restartButton {
-            padding: 15px 40px;
-            font-size: 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        #restartButton:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-        
-        #menuButton {
-            padding: 15px 40px;
-            font-size: 20px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-        
-        #menuButton:hover {
-            background-color: #d32f2f;
-            transform: scale(1.05);
-        }
-        
-        .instructions {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #aaa;
-            font-size: 14px;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .controls {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #ccc;
-        }
-        
-        #scoreDisplay {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 24px;
-            border-radius: 5px;
-            z-index: 5;
-        }
-        
-        #roundWinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 48px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 20px 40px;
-            border-radius: 10px;
-            z-index: 15;
-            display: none;
-        }
-        
-        #victoryScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 25;
-        }
-        
-        #victoryText {
-            font-size: 72px;
-            margin-bottom: 40px;
-            color: gold;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-        }
-        
-        #victoryButtons {
-            display: flex;
-            gap: 20px;
-        }
-
-        .face {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .fireMage-face {
-            background-color: #f80;
-            border: 2px solid #f50;
-        }
-
-        .archer-face {
-            background-color: #0a0;
-            border: 2px solid #080;
-        }
-
-        .knight-face {
-            background-color: #300;
-            border: 2px solid #100;
-        }
-
-        .necromancer-face {
-            background-color: #808;
-            border: 2px solid #606;
-        }
-
-        .lancer-face {
-            background-color: #0ff;
-            border: 2px solid #0cc;
-        }
-
-        .assassin-face {
-            background-color: #840;
-            border: 2px solid #620;
-        }
-
-        .aim-arrow {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background-color: white;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            transform-origin: 50% 100%;
-        }
-    </style>
-</head>
-<body>
-    <div id="gameContainer">
-        <canvas id="canvas"></canvas>
-        
-        <div id="gameUI">
-            <div id="player1Info" class="player-info team-red">
-                <div class="player-name">Jogador 1</div>
-                <div class="health-bar">
-                    <div class="health-fill"></div>
-                </div>
-                <div class="special-bar">
-                    <div class="special-fill"></div>
-                </div>
-                <div class="basic-attack-bar">
-                    <div class="basic-attack-fill"></div>
-                </div>
-                <div class="controls">WASD - Movimento | T - Atirar | Y - Especial</div>
-            </div>
-            
-            <div id="player2Info" class="player-info team-blue">
-                <div class="player-name">Jogador 2</div>
-                <div class="health-bar">
-                    <div class="health-fill"></div>
-                </div>
-                <div class="special-bar">
-                    <div class="special-fill"></div>
-                </div>
-                <div class="basic-attack-bar">
-                    <div class="basic-attack-fill"></div>
-                </div>
-                <div class="controls">Setas - Movimento | L - Atirar | Ç - Especial</div>
-            </div>
-            
-            <div id="scoreDisplay">Vermelho 0 - 0 Azul</div>
-        </div>
-        
-        <div id="menu">
-            <h1 id="title">Arena of Champions</h1>
-            
-            <div class="team-select">
-                <div class="team team-red">
-                    <div class="team-title">Time Vermelho (Jogador 1)</div>
-                    <div class="character-select">
-                        <div class="character" data-character="fireMage">
-                            <div class="character-icon">🔥</div>
-                            <div class="character-name">Mago de Fogo</div>
-                            <div class="character-desc">Atira bolas de fogo que causam queimadura. Especial: Explosão de fogo.</div>
-                        </div>
-                        <div class="character" data-character="archer">
-                            <div class="character-icon">🏹</div>
-                            <div class="character-name">Arqueiro Real</div>
-                            <div class="character-desc">Atira flechas rapidamente. Especial: Chuva de flechas.</div>
-                        </div>
-                        <div class="character" data-character="knight">
-                            <div class="character-icon">⚔️</div>
-                            <div class="character-name">Cavaleiro Negro</div>
-                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Espada poderosa.</div>
-                        </div>
-                        <div class="character" data-character="necromancer">
-                            <div class="character-icon">💀</div>
-                            <div class="character-name">Necromante</div>
-                            <div class="character-desc">Invoca criaturas dos mortos. Especial: Invocação dos Mortos.</div>
-                        </div>
-                        <div class="character" data-character="lancer">
-                            <div class="character-icon">🔱</div>
-                            <div class="character-name">Lanceiro</div>
-                            <div class="character-desc">Ataques corpo-a-corpo poderosos. Especial: Investida Real.</div>
-                        </div>
-                        <div class="character" data-character="assassin">
-                            <div class="character-icon">🗡️</div>
-                            <div class="character-name">Assassino</div>
-                            <div class="character-desc">Ataques rápidos e furtivos. Especial: Desaparecimento Letal.</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="team team-blue">
-                    <div class="team-title">Time Azul (Jogador 2)</div>
-                    <div class="character-select">
-                        <div class="character" data-character="fireMage">
-                            <div class="character-icon">🔥</div>
-                            <div class="character-name">Mago de Fogo</div>
-                            <div class="character-desc">Atira bolas de fogo que causam queimadura. Especial: Explosão de fogo.</div>
-                        </div>
-                        <div class="character" data-character="archer">
-                            <div class="character-icon">🏹</div>
-                            <div class="character-name">Arqueiro Real</div>
-                            <div class="character-desc">Atira flechas rapidamente. Especial: Chuva de flechas.</div>
-                        </div>
-                        <div class="character" data-character="knight">
-                            <div class="character-icon">⚔️</div>
-                            <div class="character-name">Cavaleiro Negro</div>
-                            <div class="character-desc">Atira três projéteis de uma vez. Especial: Espada poderosa.</div>
-                        </div>
-                        <div class="character" data-character="necromancer">
-                            <div class="character-icon">💀</div>
-                            <div class="character-name">Necromante</div>
-                            <div class="character-desc">Invoca criaturas dos mortos. Especial: Invocação dos Mortos.</div>
-                        </div>
-                        <div class="character" data-character="lancer">
-                            <div class="character-icon">🔱</div>
-                            <div class="character-name">Lanceiro</div>
-                            <div class="character-desc">Ataques corpo-a-corpo poderosos. Especial: Investida Real.</div>
-                        </div>
-                        <div class="character" data-character="assassin">
-                            <div class="character-icon">🗡️</div>
-                            <div class="character-name">Assassino</div>
-                            <div class="character-desc">Ataques rápidos e furtivos. Especial: Desaparecimento Letal.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <button id="startButton">Começar Batalha</button>
-         
-        </div>
-        
-        <div id="gameOver">
-            <h1>Fim da Batalha</h1>
-            <div id="winnerText"></div>
-            <button id="restartButton">Jogar Novamente</button>
-        </div>
-        
-        <div id="roundWinner"></div>
-        
-        <div id="victoryScreen">
-            <div id="victoryText"></div>
-            <div id="victoryButtons">
-                <button id="rematchButton">Revanche</button>
-                <button id="menuButton">Menu</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Configurações do jogo
-        const config = {
-            width: 800,
-            height: 600,
-            playerSpeed: 5,
-            playerSize: 20,
-            powerUpSpawnRate: 15000, // 15 segundos
-            specialCooldown: {
-                fireMage: 15000,
-                archer: 15000,
-                knight: 20000,
-                necromancer: 20000,
-                lancer: 17000,
-                assassin: 15000
-            },
-            basicAttackCooldown: {
-                fireMage: 700,
-                archer: 250,
-                knight: 550,
-                necromancer: 650,
-                lancer: 1000,
-                assassin: 300
-            }
-        };
-
-        // Elementos do DOM
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const menu = document.getElementById('menu');
-        const gameUI = document.getElementById('gameUI');
-        const player1Info = document.getElementById('player1Info');
-        const player2Info = document.getElementById('player2Info');
-        const gameOverScreen = document.getElementById('gameOver');
-        const winnerText = document.getElementById('winnerText');
-        const startButton = document.getElementById('startButton');
-        const restartButton = document.getElementById('restartButton');
-        const characterElements = document.querySelectorAll('.character');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        const roundWinner = document.getElementById('roundWinner');
-        const victoryScreen = document.getElementById('victoryScreen');
-        const victoryText = document.getElementById('victoryText');
-        const rematchButton = document.getElementById('rematchButton');
-        const menuButton = document.getElementById('menuButton');
-
-        // Estado do jogo
-        let gameRunning = false;
-        let gamePaused = false;
-        let player1 = null;
-        let player2 = null;
-        let projectiles = [];
-        let monsters = [];
-        let effects = [];
-        let powerUps = [];
-        let lastPowerUpSpawn = 0;
-        let keys = {};
-        let player1Selected = null;
-        let player2Selected = null;
-        let gameTime = 0;
-        let score = { red: 0, blue: 0 };
-        let roundEndTime = 0;
-        let roundWinnerTeam = null;
-        let lastDirection = {
-            red: { x: 1, y: 0 },
-            blue: { x: -1, y: 0 }
-        };
-
-        // Cores dos personagens
-        const characterColors = {
-            fireMage: '#f80',    // Laranja
-            archer: '#0a0',     // Verde
-            knight: '#300',     // Preto
-            necromancer: '#808', // Roxo
-            lancer: '#0ff',     // Azul ciano
-            assassin: '#840'     // Marrom
-        };
-
-        // Classes do jogo
-        class Player {
-            constructor(type, team, x, y) {
-                this.type = type;
-                this.team = team;
-                this.x = x;
-                this.y = y;
-                this.size = config.playerSize;
-                this.speed = config.playerSpeed;
-                this.color = characterColors[type];
-                this.bulletSpeed = 10;
-                this.bulletSize = 8;
-                this.bulletColor = team === 'red' ? '#f80' : '#0af';
-                this.lastShotTime = 0;
-                this.shotInterval = config.basicAttackCooldown[type];
-                this.specialCooldown = config.specialCooldown[type];
-                this.specialReady = true;
-                this.specialActive = false;
-                this.specialEndTime = 0;
-                this.damage = 0;
-                this.maxHealth = 100;
-                this.health = this.maxHealth;
-                this.invulnerable = false;
-                this.swordAngle = 0;
-                this.attackCooldown = 0;
-                this.lastAttackTime = 0;
-                this.attacking = false;
-                this.attackDuration = 200;
-                this.stunnedUntil = 0;
-                this.visible = true;
-                this.lastBasicAttackTime = 0;
-                this.basicAttackReady = true;
-                this.aimAngle = team === 'red' ? 0 : Math.PI;
-                this.faceElement = document.createElement('div');
-                this.faceElement.className = `face ${type}-face`;
-                document.body.appendChild(this.faceElement);
-                this.aimArrow = document.createElement('div');
-                this.aimArrow.className = 'aim-arrow';
-                document.body.appendChild(this.aimArrow);
-                
-                // Configurações específicas por personagem
-                switch(type) {
-                    case 'fireMage':
-                        this.color = characterColors.fireMage;
-                        this.bulletColor = team === 'red' ? '#f80' : '#0af';
-                        this.bulletSize = 10;
-                        this.shotInterval = 700;
-                        this.damage = 15;
-                        this.maxHealth = 250;
-                        this.health = 250;
-                        break;
-                    case 'archer':
-                        this.color = characterColors.archer;
-                        this.bulletColor = team === 'red' ? '#f00' : '#00f';
-                        this.bulletSize = 6;
-                        this.shotInterval = 250;
-                        this.damage = 15;
-                        this.maxHealth = 215;
-                        this.health = 215;
-                        this.speed = config.playerSpeed * 1.3;
-                        break;
-                    case 'knight':
-                        this.color = characterColors.knight;
-                        this.bulletColor = team === 'red' ? '#a00' : '#00a';
-                        this.bulletSize = 7;
-                        this.shotInterval = 550;
-                        this.damage = 27;
-                        this.maxHealth = 325;
-                        this.health = 325;
-                        this.bulletRange = 200;
-                        break;
-                    case 'necromancer':
-                        this.color = characterColors.necromancer;
-                        this.bulletColor = team === 'red' ? '#a00' : '#00a';
-                        this.bulletSize = 10;
-                        this.shotInterval = 650;
-                        this.damage = 45;
-                        this.maxHealth = 250;
-                        this.health = 250;
-                        break;
-                    case 'lancer':
-                        this.color = characterColors.lancer;
-                        this.speed = config.playerSpeed * 1.15;
-                        this.attackCooldown = 900;
-                        this.lastAttackTime = 0;
-                        this.attacking = false;
-                        this.attackDuration = 200;
-                        this.damage = 55;
-                        this.maxHealth = 350;
-                        this.health = 350;
-                        break;
-                    case 'assassin':
-                        this.color = characterColors.assassin;
-                        this.bulletColor = team === 'red' ? '#a00' : '#00a';
-                        this.bulletSize = 5;
-                        this.shotInterval = 300;
-                        this.damage = 45;
-                        this.maxHealth = 220;
-                        this.health = 220;
-                        this.speed = config.playerSpeed * 1.3;
-                        break;
-                }
-            }
-            
-            update() {
-                if (this.stunnedUntil > Date.now() || gamePaused) return;
-                
-                // Atualizar cooldown do ataque básico
-                if (!this.basicAttackReady) {
-                    const elapsed = Date.now() - this.lastBasicAttackTime;
-                    const percent = (elapsed / this.shotInterval) * 100;
-                    this.updateBasicAttackBar(percent);
-                    
-                    if (elapsed >= this.shotInterval) {
-                        this.basicAttackReady = true;
-                        this.updateBasicAttackBar(100);
-                    }
-                }
-                
-                // Movimento
-                let moveX = 0;
-                let moveY = 0;
-                
-                if (this.team === 'red') {
-                    if (keys['w']) moveY -= this.speed;
-                    if (keys['s']) moveY += this.speed;
-                    if (keys['a']) moveX -= this.speed;
-                    if (keys['d']) moveX += this.speed;
-                } else {
-                    if (keys['ArrowUp']) moveY -= this.speed;
-                    if (keys['ArrowDown']) moveY += this.speed;
-                    if (keys['ArrowLeft']) moveX -= this.speed;
-                    if (keys['ArrowRight']) moveX += this.speed;
-                }
-                
-                // Atualizar direção da mira
-                if (moveX !== 0 || moveY !== 0) {
-                    this.aimAngle = Math.atan2(moveY, moveX);
-                    lastDirection[this.team] = { x: moveX, y: moveY };
-                } else {
-                    // Manter a última direção se não estiver se movendo
-                    const lastDir = lastDirection[this.team];
-                    if (lastDir.x !== 0 || lastDir.y !== 0) {
-                        this.aimAngle = Math.atan2(lastDir.y, lastDir.x);
-                    }
-                }
-                
-                // Normalizar movimento diagonal
-                if (moveX !== 0 && moveY !== 0) {
-                    moveX *= 0.7071; // 1/sqrt(2)
-                    moveY *= 0.7071;
-                }
-                
-                this.x += moveX;
-                this.y += moveY;
-                
-                // Limitar ao canvas (com borda vermelha)
-                const borderSize = 10;
-                this.x = Math.max(this.size + borderSize, Math.min(config.width - this.size - borderSize, this.x));
-                this.y = Math.max(this.size + borderSize, Math.min(config.height - this.size - borderSize, this.y));
-                
-                // Atualizar posição do rosto e seta de mira
-                this.faceElement.style.left = `${this.x + window.scrollX - 25}px`;
-                this.faceElement.style.top = `${this.y + window.scrollY - 25}px`;
-                this.aimArrow.style.left = `${this.x + window.scrollX + Math.cos(this.aimAngle) * (this.size + 10) - 7}px`;
-                this.aimArrow.style.top = `${this.y + window.scrollY + Math.sin(this.aimAngle) * (this.size + 10) - 7}px`;
-                this.aimArrow.style.transform = `rotate(${this.aimAngle}rad)`;
-                
-                // Verificar se habilidade especial está ativa
-                if (this.specialActive && Date.now() > this.specialEndTime) {
-                    this.specialActive = false;
-                    
-                    if (this.type === 'archer') {
-                        this.speed = config.playerSpeed;
-                    } else if (this.type === 'knight') {
-                        this.invulnerable = false;
-                        this.speed = config.playerSpeed;
-                    } else if (this.type === 'lancer') {
-                        this.invulnerable = false;
-                        this.speed = config.playerSpeed * 1.15;
-                    } else if (this.type === 'assassin') {
-                        this.visible = true;
-                        this.speed = config.playerSpeed * 1.3;
-                    }
-                }
-                
-                // Atualizar ângulo da espada do cavaleiro ou lança do lanceiro
-                if (this.type === 'knight' || this.type === 'lancer') {
-                    this.swordAngle = this.aimAngle;
-                }
-                
-                // Verificar se está atacando (lanceiro)
-                if (this.type === 'lancer' && this.attacking && Date.now() > this.lastAttackTime + this.attackDuration) {
-                    this.attacking = false;
-                }
-            }
-            
-            draw() {
-                if (!this.visible) return;
-                
-                // Desenhar jogador com transparência se estiver invulnerável ou invisível
-                if (this.invulnerable || (this.type === 'assassin' && this.specialActive)) {
-                    ctx.globalAlpha = 0.6;
-                }
-                
-                // Desenhar jogador atordoado
-                if (this.stunnedUntil > Date.now()) {
-                    ctx.fillStyle = '#888';
-                } else {
-                    ctx.fillStyle = this.color;
-                }
-                
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Resetar transparência
-                ctx.globalAlpha = 1.0;
-                
-                // Desenhar aura se for mago de fogo com especial ativo
-                if (this.type === 'fireMage' && this.specialActive) {
-                    ctx.strokeStyle = this.team === 'red' ? 'rgba(255, 100, 0, 0.5)' : 'rgba(0, 100, 255, 0.5)';
-                    ctx.lineWidth = 10;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size + 30, 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-                
-                // Desenhar espada se for cavaleiro com especial ativo
-                if (this.type === 'knight' && this.specialActive) {
-                    const swordLength = this.size * 2;
-                    const swordEndX = this.x + Math.cos(this.swordAngle) * swordLength;
-                    const swordEndY = this.y + Math.sin(this.swordAngle) * swordLength;
-                    
-                    // Lâmina da espada (cinza)
-                    ctx.strokeStyle = '#ccc';
-                    ctx.lineWidth = 5;
-                    ctx.beginPath();
-                    ctx.moveTo(this.x, this.y);
-                    ctx.lineTo(swordEndX, swordEndY);
-                    ctx.stroke();
-                    
-                    // Base da espada (marrom)
-                    ctx.strokeStyle = '#840';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(this.x, this.y);
-                    ctx.lineTo(this.x + Math.cos(this.swordAngle) * this.size * 0.7, this.y + Math.sin(this.swordAngle) * this.size * 0.7);
-                    ctx.stroke();
-                    
-                    // Ponta da espada
-                    ctx.fillStyle = '#ccc';
-                    ctx.beginPath();
-                    ctx.arc(swordEndX, swordEndY, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
-                // Desenhar lança do lanceiro
-                if (this.type === 'lancer') {
-                    const lanceLength = this.size * 2.3;
-                    const lanceEndX = this.x + Math.cos(this.swordAngle) * lanceLength;
-                    const lanceEndY = this.y + Math.sin(this.swordAngle) * lanceLength;
-                    
-                    // Cor da lança muda quando está atacando
-                    const lanceTipColor = this.attacking ? '#f00' : '#fff';
-                    
-                    // Haste da lança (marrom)
-                    ctx.strokeStyle = '#840';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(this.x, this.y);
-                    ctx.lineTo(lanceEndX, lanceEndY);
-                    ctx.stroke();
-                    
-                    // Ponta da lança (branca ou vermelha)
-                    ctx.fillStyle = lanceTipColor;
-                    ctx.beginPath();
-                    ctx.arc(lanceEndX, lanceEndY, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
-                // Desenhar nome do personagem
-                ctx.fillStyle = '#fff';
-                ctx.font = '12px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(this.type === 'fireMage' ? '🔥' : 
-                            this.type === 'archer' ? '🏹' : 
-                            this.type === 'knight' ? '⚔️' :
-                            this.type === 'necromancer' ? '☠️' :
-                            this.type === 'lancer' ? '🔱' : '🗡️', 
-                            this.x, this.y - this.size - 5);
-              
-            }
-            
-            shoot() {
-                // Verificar se pode atirar (intervalo e se não está atordoado)
-                const now = Date.now();
-                if (!this.basicAttackReady || 
-                    this.stunnedUntil > now ||
-                    (this.type === 'knight' && this.specialActive) ||
-                    this.type === 'lancer' ||
-                    gamePaused) {
-                    return;
-                }
-                
-                this.lastBasicAttackTime = now;
-                this.basicAttackReady = false;
-                this.updateBasicAttackBar(0);
-                
-                // Usar ângulo de mira atual
-                const angle = this.aimAngle;
-                
-                switch(this.type) {
-                    case 'fireMage':
-                        // Mago atira dois projéteis um atrás do outro com delay
-                        const offset = 15;
-                        const bullet1 = new Bullet(
-                            this.x + Math.cos(angle) * offset,
-                            this.y + Math.sin(angle) * offset,
-                            angle,
-                            this.bulletSpeed,
-                            this.bulletSize,
-                            this.bulletColor,
-                            this.damage,
-                            this.team,
-                            'burn',
-                            { damage: 3, duration: 3000 }
-                        );
-                        
-                        projectiles.push(bullet1);
-                        
-                        // Segundo projetil com delay
-                        setTimeout(() => {
-                            if (gameRunning && !gamePaused) {
-                                const bullet2 = new Bullet(
-                                    this.x + Math.cos(angle) * offset,
-                                    this.y + Math.sin(angle) * offset,
-                                    angle,
-                                    this.bulletSpeed,
-                                    this.bulletSize,
-                                    this.bulletColor,
-                                    this.damage,
-                                    this.team
-                                );
-                                projectiles.push(bullet2);
-                            }
-                        }, 100);
-                        break;
-                        
-                    case 'archer':
-                        // Arqueiro atira uma flecha
-                        const arrow = new Bullet(
-                            this.x,
-                            this.y,
-                            angle,
-                            this.bulletSpeed * 1.3,
-                            this.bulletSize,
-                            this.bulletColor,
-                            this.damage,
-                            this.team
-                        );
-                        projectiles.push(arrow);
-                        break;
-                        
-                    case 'knight':
-                        // Cavaleiro atira três balas em leque com alcance curto
-                        for (let i = -1; i <= 1; i++) {
-                            const spreadAngle = angle + (i * 0.2);
-                            const bullet = new Bullet(
-                                this.x,
-                                this.y,
-                                spreadAngle,
-                                this.bulletSpeed,
-                                this.bulletSize,
-                                this.bulletColor,
-                                this.damage,
-                                this.team,
-                                null,
-                                null,
-                                this.bulletRange
-                            );
-                            projectiles.push(bullet);
-                        }
-                        break;
-                        
-                    case 'necromancer':
-                        // Necromante atira uma esfera que se divide
-                        const orb = new Bullet(
-                            this.x,
-                            this.y,
-                            angle,
-                            this.bulletSpeed * 1.1,
-                            this.bulletSize,
-                            this.bulletColor,
-                            this.damage,
-                            this.team,
-                            'split',
-                            { count: 3, damage: 15, angleSpread: 0.3 }
-                        );
-                        projectiles.push(orb);
-                        break;
-                        
-                    case 'assassin':
-                        // Assassino dá um dash e atira uma faca
-                        const dashDistance = 30;
-                        this.x += Math.cos(angle) * dashDistance;
-                        this.y += Math.sin(angle) * dashDistance;
-                        
-                        // Limitar ao canvas (com borda vermelha)
-                        const borderSize = 10;
-                        this.x = Math.max(this.size + borderSize, Math.min(config.width - this.size - borderSize, this.x));
-                        this.y = Math.max(this.size + borderSize, Math.min(config.height - this.size - borderSize, this.y));
-                        
-                        const dagger = new Bullet(
-                            this.x,
-                            this.y,
-                            angle,
-                            this.bulletSpeed * 1.8,
-                            this.bulletSize,
-                            this.bulletColor,
-                            this.damage,
-                            this.team,
-                            'bleed',
-                            { damage: 7, duration: 2000 }
-                        );
-                        projectiles.push(dagger);
-                        
-                        // Cooldown maior se acertar o oponente
-                        const opponent = this.team === 'red' ? player2 : player1;
-                        const distance = Math.sqrt(
-                            Math.pow(opponent.x - this.x, 2) + 
-                            Math.pow(opponent.y - this.y, 2)
-                        );
-                        
-                        if (distance < opponent.size + this.size + 20) {
-                            this.shotInterval = 1500;
-                        } else {
-                            this.shotInterval = 300;
-                        }
-                        break;
-                }
-            }
-            
-            attack() {
-                // Ataque do lanceiro
-                if (this.type !== 'lancer') return;
-                
-                const now = Date.now();
-                if (now - this.lastAttackTime < this.attackCooldown || this.stunnedUntil > now || gamePaused) {
-                    return;
-                }
-                
-                this.lastAttackTime = now;
-                this.attacking = true;
-                
-                // Verificar colisão com o oponente
-                const opponent = this.team === 'red' ? player2 : player1;
-                const lanceLength = this.size * 2.5;
-                const lanceEndX = this.x + Math.cos(this.swordAngle) * lanceLength;
-                const lanceEndY = this.y + Math.sin(this.swordAngle) * lanceLength;
-                
-                if (checkLineCircleCollision(
-                    this.x, this.y, lanceEndX, lanceEndY,
-                    opponent.x, opponent.y, opponent.size
-                )) {
-                    opponent.takeDamage(this.damage);
-                }
-            }
-            
-            useSpecial() {
-                if (!this.specialReady || this.specialActive || this.stunnedUntil > Date.now() || gamePaused) return;
-                
-                this.specialReady = false;
-                this.specialActive = true;
-                this.updateSpecialBar(0);
-                
-                switch(this.type) {
-                    case 'fireMage':
-                        // Criar 50 bolas de fogo em todas as direções
-                        for (let i = 0; i < 50; i++) {
-                            const angle = (i / 50) * Math.PI * 2;
-                            const bullet = new Bullet(
-                                this.x,
-                                this.y,
-                                angle,
-                                this.bulletSpeed * 1.3,
-                                this.bulletSize * 1.5,
-                                this.team === 'red' ? '#f50' : '#05f',
-                                20,
-                                this.team,
-                                'burn',
-                                { damage: 10, duration: 3000 }
-                            );
-                            projectiles.push(bullet);
-                        }
-                        
-                        // Adicionar efeito de aura
-                        effects.push({
-                            x: this.x,
-                            y: this.y,
-                            radius: this.size + 30,
-                            damage: 5,
-                            interval: 500,
-                            lastHitTime: 0,
-                            duration: 3000,
-                            startTime: Date.now(),
-                            type: 'aura',
-                            team: this.team
-                        });
-                        
-                        // Efeito especial de fogo
-                        effects.push({
-                            x: this.x,
-                            y: this.y,
-                            radius: this.size + 50,
-                            duration: 3000,
-                            startTime: Date.now(),
-                            type: 'fireSpecial',
-                            team: this.team
-                        });
-                        
-                        this.specialEndTime = Date.now();
-                        break;
-                        
-                    case 'archer':
-                        // Atirar 25 flechas na direção do oponente
-                        const angle = this.aimAngle;
-                        for (let i = 0; i < 25; i++) {
-                            const spreadAngle = angle + (Math.random() - 0.5) * 0.5;
-                            const arrow = new Bullet(
-                                this.x,
-                                this.y,
-                                spreadAngle,
-                                this.bulletSpeed * 1.5,
-                                this.bulletSize,
-                                this.bulletColor,
-                                10,
-                                this.team
-                            );
-                            projectiles.push(arrow);
-                        }
-                        
-                        // Dash para trás
-                        const dashAngle = angle + Math.PI;
-                        this.x += Math.cos(dashAngle) * 100;
-                        this.y += Math.sin(dashAngle) * 100;
-                        
-                        // Limitar ao canvas (com borda vermelha)
-                        const borderSize = 10;
-                        this.x = Math.max(this.size + borderSize, Math.min(config.width - this.size - borderSize, this.x));
-                        this.y = Math.max(this.size + borderSize, Math.min(config.height - this.size - borderSize, this.y));
-                        
-                        // Efeito de sombra
-                        effects.push({
-                            x: this.x - Math.cos(dashAngle) * 50,
-                            y: this.y - Math.sin(dashAngle) * 50,
-                            radius: this.size,
-                            alpha: 0.7,
-                            duration: 1000,
-                            startTime: Date.now(),
-                            type: 'shadow',
-                            color: this.color
-                        });
-                        
-                        this.specialEndTime = Date.now();
-                        break;
-                        
-                    case 'knight':
-                        // Ativar modo espada e invulnerabilidade
-                        this.invulnerable = true;
-                        this.speed = config.playerSpeed * 1.3;
-                        this.specialEndTime = Date.now() + 3000; 
-                        
-                        // Efeito de espada
-                        setInterval(() => {
-                            if (!this.specialActive) return;
-                            
-                            const swordLength = this.size * 2.5;
-                            const swordEndX = this.x + Math.cos(this.swordAngle) * swordLength;
-                            const swordEndY = this.y + Math.sin(this.swordAngle) * swordLength;
-                            
-                            const target = this.team === 'red' ? player2 : player1;
-                            if (checkLineCircleCollision(
-                                this.x, this.y, swordEndX, swordEndY,
-                                target.x, target.y, target.size
-                            )) {
-                                target.takeDamage(10);
-                            }
-                        }, 780);
-                        
-                        // Efeito especial de espada
-                        effects.push({
-                            x: this.x,
-                            y: this.y,
-                            angle: this.swordAngle,
-                            duration: 3000,
-                            startTime: Date.now(),
-                            type: 'swordSpecial',
-                            team: this.team
-                        });
-                        break;
-                        
-                    case 'necromancer':
-                        // Invocar 3 monstros (30% de chance do terceiro ser venenoso)
-                        for (let i = 0; i < 3; i++) {
-                            const isPoison = i === 2 && Math.random() < 0.3;
-                            
-                            const monster = new Monster(
-                                this.x + (Math.random() - 0.5) * 50,
-                                this.y + (Math.random() - 0.5) * 50,
-                                this.team,
-                                isPoison
-                            );
-                            monsters.push(monster);
-                        }
-                        
-                        // Efeito especial de necromante
-                        effects.push({
-                            x: this.x,
-                            y: this.y,
-                            radius: this.size + 40,
-                            duration: 1500,
-                            startTime: Date.now(),
-                            type: 'necromancerSpecial',
-                            team: this.team
-                        });
-                        
-                        this.specialEndTime = Date.now();
-                        break;
-                        
-                    case 'lancer':
-                        // Investida violenta
-                        this.invulnerable = true;
-                        this.speed = config.playerSpeed * 2.5;
-                        this.specialEndTime = Date.now() + 2000; // 1 segundo de investida
-                        
-                        // Verificar colisão durante a investida
-                        const checkCollision = setInterval(() => {
-                            if (!this.specialActive) {
-                                clearInterval(checkCollision);
-                                return;
-                            }
-                            
-                            const opponent = this.team === 'red' ? player2 : player1;
-                            const distance = Math.sqrt(
-                                Math.pow(this.x - opponent.x, 2) + 
-                                Math.pow(this.y - opponent.y, 2)
-                            );
-                            
-                            if (distance < this.size + opponent.size) {
-                                // Acertou o oponente
-                                opponent.takeDamage(100);
-                                opponent.stunnedUntil = Date.now() + 2500; // 2.5 segundos de atordoamento
-                                this.specialActive = false;
-                                this.invulnerable = false;
-                                this.speed = config.playerSpeed * 1.15;
-                                clearInterval(checkCollision);
-                            }
-                            
-                            // Verificar colisão com borda
-                            const borderSize = 10;
-                            if (this.x <= this.size + borderSize || 
-                                this.x >= config.width - this.size - borderSize ||
-                                this.y <= this.size + borderSize || 
-                                this.y >= config.height - this.size - borderSize) {
-                                this.specialActive = false;
-                                this.invulnerable = false;
-                                this.speed = config.playerSpeed * 1.15;
-                                clearInterval(checkCollision);
-                            }
-                        }, 50);
-                        
-                        // Efeito especial de investida
-                        effects.push({
-                            x: this.x,
-                            y: this.y,
-                            angle: this.swordAngle,
-                            duration: 2000,
-                            startTime: Date.now(),
-                            type: 'lancerSpecial',
-                            team: this.team
-                        });
-                        break;
-                        
-                    case 'assassin':
-                        // Invisibilidade e velocidade aumentada
-                        this.visible = false;
-                        this.speed = config.playerSpeed * 2; // 100% mais rápido
-                        this.specialEndTime = Date.now() + 2400; // 4 segundos
-                        
-                        // Atirar 3 adagas envenenadas em direções aleatórias
-                        for (let i = 0; i < 5; i++) {
-                            const angle = Math.random() * Math.PI * 2;
-                            const dagger = new Bullet(
-                                this.x,
-                                this.y,
-                                angle,
-                                this.bulletSpeed * 1.5,
-                                this.bulletSize,
-                                this.bulletColor,
-                                10,
-                                this.team,
-                                'poison',
-                                { damage: 5, duration: 5000, slow: 0.25 }
-                            );
-                            projectiles.push(dagger);
-                        }
-                        
-                        // Efeito especial de assassin
-                        effects.push({
-                            x: this.x,
-                            y: this.y,
-                            duration: 2400,
-                            startTime: Date.now(),
-                            type: 'assassinSpecial',
-                            team: this.team
-                        });
-                        break;
-                }
-                
-                // Iniciar cooldown
-                setTimeout(() => {
-                    this.specialReady = true;
-                    this.updateSpecialBar(100);
-                }, this.specialCooldown);
-            }
-            
-            takeDamage(amount) {
-                if (this.invulnerable || this.stunnedUntil > Date.now()) return;
-                
-                this.health -= amount;
-                this.updateHealthBar();
-                
-                if (this.health <= 0) {
-                    // Ponto vai para o time que foi morto (inverso)
-                    roundOver(this.team === 'red' ? 'blue' : 'red');
-                }
-            }
-            
-            heal(amount) {
-                this.health = Math.min(this.maxHealth, this.health + amount);
-                this.updateHealthBar();
-            }
-            
-            updateHealthBar() {
-                const healthBar = this.team === 'red' ? 
-                    player1Info.querySelector('.health-fill') : 
-                    player2Info.querySelector('.health-fill');
-                healthBar.style.width = `${(this.health / this.maxHealth) * 100}%`;
-            }
-            
-            updateSpecialBar(percent) {
-                const specialBar = this.team === 'red' ? 
-                    player1Info.querySelector('.special-fill') : 
-                    player2Info.querySelector('.special-fill');
-                specialBar.style.width = `${percent}%`;
-            }
-            
-            updateBasicAttackBar(percent) {
-                const basicAttackBar = this.team === 'red' ? 
-                    player1Info.querySelector('.basic-attack-fill') : 
-                    player2Info.querySelector('.basic-attack-fill');
-                basicAttackBar.style.width = `${percent}%`;
-            }
-            
-            destroy() {
-                // Remover elementos DOM quando o jogador for destruído
-                if (this.faceElement.parentNode) {
-                    this.faceElement.parentNode.removeChild(this.faceElement);
-                }
-                if (this.aimArrow.parentNode) {
-                    this.aimArrow.parentNode.removeChild(this.aimArrow);
-                }
-            }
-        }
-
-        class Bullet {
-            constructor(x, y, angle, speed, size, color, damage, team, effectType = null, effectData = null, range = null) {
-                this.x = x;
-                this.y = y;
-                this.angle = angle;
-                this.speed = speed;
-                this.size = size;
-                this.color = color;
-                this.damage = damage;
-                this.team = team;
-                this.effectType = effectType;
-                this.effectData = effectData;
-                this.range = range;
-                this.distanceTraveled = 0;
-                this.startX = x;
-                this.startY = y;
-                this.shouldSplit = false;
-                
-                if (effectType === 'split') {
-                    this.splitDistance = this.range ? this.range / 2 : 300;
-                }
-            }
-            
-            update() {
-                this.x += Math.cos(this.angle) * this.speed;
-                this.y += Math.sin(this.angle) * this.speed;
-                this.distanceTraveled = Math.sqrt((this.x - this.startX) ** 2 + (this.y - this.startY) ** 2);
-                
-                // Verificar divisão do projetil (necromante)
-                if (this.effectType === 'split' && !this.shouldSplit && 
-                    this.distanceTraveled >= this.splitDistance) {
-                    this.shouldSplit = true;
-                    this.split();
-                    return true; // Remove o projetil original após a divisão
-                }
-                
-                // Verificar se saiu da tela ou atingiu o alcance máximo
-                return this.x < -this.size || this.x > config.width + this.size || 
-                       this.y < -this.size || this.y > config.height + this.size ||
-                       (this.range !== null && this.distanceTraveled >= this.range);
-            }
-            
-            split() {
-                if (this.effectType !== 'split') return;
-                
-                for (let i = -1; i <= 1; i++) {
-                    const spreadAngle = this.angle + (i * this.effectData.angleSpread);
-                    const bullet = new Bullet(
-                        this.x,
-                        this.y,
-                        spreadAngle,
-                        this.speed * 0.9,
-                        this.size * 0.8,
-                        this.color,
-                        this.effectData.damage,
-                        this.team
-                    );
-                    projectiles.push(bullet);
-                }
-            }
-            
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        class Monster {
-            constructor(x, y, team, isPoison = false) {
-                this.x = x;
-                this.y = y;
-                this.size = 12;
-                this.speed = 2;
-                this.team = team;
-                this.color = isPoison ? '#0a0' : (team === 'red' ? '#a00' : '#00a');
-                this.health = isPoison ? 45 : 65;
-                this.maxHealth = this.health;
-                this.damage = isPoison ? 30 : 29;
-                this.lastHitTime = 0;
-                this.hitInterval = 1000;
-                this.isPoison = isPoison;
-                this.poisonDamage = 5;
-                this.poisonDuration = 5000;
-                this.slowAmount = 0.25;
-                this.lastShotTime = 0;
-                this.shotInterval = 2000;
-            }
-            
-            update() {
-                if (gamePaused) return;
-                
-                // Monstros venenosos atiram de longe
-                if (this.isPoison) {
-                    const now = Date.now();
-                    if (now - this.lastShotTime > this.shotInterval) {
-                        this.lastShotTime = now;
-                        
-                        const target = this.team === 'red' ? player2 : player1;
-                        const angle = Math.atan2(target.y - this.y, target.x - this.x);
-                        
-                        const poisonBall = new Bullet(
-                            this.x,
-                            this.y,
-                            angle,
-                            5,
-                            8,
-                            '#0f0',
-                            this.damage,
-                            this.team,
-                            'poison',
-                            { damage: this.poisonDamage, duration: this.poisonDuration, slow: this.slowAmount }
-                        );
-                        projectiles.push(poisonBall);
-                    }
-                }
-                
-                // Encontrar alvo (jogador inimigo ou monstros do time oposto)
-                let target = this.team === 'red' ? player2 : player1;
-                let targetDistance = Math.sqrt(Math.pow(this.x - target.x, 2) + Math.pow(this.y - target.y, 2));
-                
-                // Verificar se há monstros do time oposto mais próximos
-                for (const monster of monsters) {
-                    if (monster.team !== this.team) {
-                        const distance = Math.sqrt(Math.pow(this.x - monster.x, 2) + Math.pow(this.y - monster.y, 2));
-                        if (distance < targetDistance) {
-                            target = monster;
-                            targetDistance = distance;
-                        }
-                    }
-                }
-                
-                // Mover em direção ao alvo (se não for venenoso ou se estiver perto)
-                if (!this.isPoison || targetDistance < 200) {
-                    const angle = Math.atan2(target.y - this.y, target.x - this.x);
-                    this.x += Math.cos(angle) * this.speed;
-                    this.y += Math.sin(angle) * this.speed;
-                }
-                
-                // Verificar colisão com o alvo (se não for venenoso)
-                if (!this.isPoison) {
-                    const distance = Math.sqrt(Math.pow(this.x - target.x, 2) + Math.pow(this.y - target.y, 2));
-                    if (distance < this.size + target.size) {
-                        const now = Date.now();
-                        if (now - this.lastHitTime > this.hitInterval) {
-                            target.takeDamage(this.damage);
-                            this.lastHitTime = now;
-                        }
-                    }
-                }
-            }
-            
-            draw() {
-                // Corpo do monstro
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Olhos do monstro
-                ctx.fillStyle = '#fff';
-                ctx.beginPath();
-                ctx.arc(this.x - 4, this.y - 2, 2, 0, Math.PI * 2);
-                ctx.arc(this.x + 4, this.y - 2, 2, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Boca do monstro
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y + 3, 3, 0.1 * Math.PI, 0.9 * Math.PI);
-                ctx.stroke();
-                
-                // Barra de vida
-                const barWidth = this.size * 2;
-                const barHeight = 3;
-                const healthPercent = this.health / this.maxHealth;
-                
-                ctx.fillStyle = '#333';
-                ctx.fillRect(this.x - barWidth/2, this.y - this.size - 8, barWidth, barHeight);
-                ctx.fillStyle = this.isPoison ? '#0f0' : '#f00';
-                ctx.fillRect(this.x - barWidth/2, this.y - this.size - 8, barWidth * healthPercent, barHeight);
-            }
-            
-            takeDamage(amount) {
-                this.health -= amount;
-                return this.health <= 0;
-            }
-        }
-
-        class PowerUp {
-            constructor(type) {
-                this.type = type;
-                this.size = 15;
-                this.x = Math.random() * (config.width - 40) + 20;
-                this.y = Math.random() * (config.height - 40) + 20;
-                
-                switch(type) {
-                    case 'health20':
-                        this.color = '#0a0';
-                        this.healAmount = 20;
-                        break;
-                    case 'health40':
-                        this.color = '#080';
-                        this.healAmount = 40;
-                        break;
-                    case 'health80':
-                        this.color = '#050';
-                        this.healAmount = 80;
-                        break;
-                    case 'infiniteAmmo':
-                        this.color = '#00f';
-                        this.duration = 5000;
-                        break;
-                }
-            }
-            
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
-                
-                // Desenhar borda
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
-                
-                // Desenhar ícone
-                ctx.fillStyle = '#fff';
-                ctx.font = '12px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                if (this.type.includes('health')) {
-                    ctx.fillText('+', this.x, this.y - 2);
-                    ctx.fillText(this.healAmount, this.x, this.y + 10);
-                } else {
-                    ctx.fillText('∞', this.x, this.y + 3);
-                }
-            }
-            
-            checkCollision(player) {
-                const dx = player.x - this.x;
-                const dy = player.y - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < player.size + this.size) {
-                    if (this.type.includes('health')) {
-                        player.heal(this.healAmount);
-                    } else if (this.type === 'infiniteAmmo') {
-                        player.shotInterval = 100; // Tiro muito rápido
-                        setTimeout(() => {
-                            if (player.type === 'fireMage') player.shotInterval = 700;
-                            else if (player.type === 'archer') player.shotInterval = 250;
-                            else if (player.type === 'knight') player.shotInterval = 550;
-                            else if (player.type === 'necromancer') player.shotInterval = 650;
-                            else if (player.type === 'assassin') player.shotInterval = 300;
-                        }, this.duration);
-                    }
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        // Funções do jogo
-        function spawnPowerUp() {
-            const types = ['health20', 'health40', 'health80', 'infiniteAmmo'];
-            const weights = [0.4, 0.3, 0.2, 0.1]; // Probabilidades para cada tipo
-            const totalWeight = weights.reduce((a, b) => a + b, 0);
-            let random = Math.random() * totalWeight;
-            let typeIndex = 0;
-            
-            for (let i = 0; i < weights.length; i++) {
-                if (random < weights[i]) {
-                    typeIndex = i;
-                    break;
-                }
-                random -= weights[i];
-            }
-            
-            powerUps.push(new PowerUp(types[typeIndex]));
-        }
-
-        function roundOver(winningTeam) {
-            gameRunning = false;
-            gamePaused = true;
-            roundWinnerTeam = winningTeam;
-            roundEndTime = Date.now() + 2000; // 2 segundos
-            
-            // Atualizar placar
-            score[winningTeam]++;
-            updateScoreDisplay();
-            
-            // Mostrar mensagem do round
-            roundWinner.textContent = winningTeam === 'red' ? 'Ponto Time Vermelho' : 'Ponto Time Azul';
-            roundWinner.style.color = winningTeam === 'red' ? '#f00' : '#00f';
-            roundWinner.style.display = 'block';
-            
-            // Verificar vitória
-            if (score[winningTeam] >= 3) {
-                setTimeout(() => {
-                    gameOver(winningTeam);
-                }, 2000);
-            }
-        }
-
-        function gameOver(winningTeam) {
-            gameRunning = false;
-            victoryScreen.style.display = 'flex';
-            victoryText.textContent = `Vitória Time ${winningTeam === 'red' ? 'Vermelho' : 'Azul'}!`;
-            victoryText.style.color = winningTeam === 'red' ? '#f00' : '#00f';
-            victoryText.style.textShadow = `0 0 20px ${winningTeam === 'red' ? '#f00' : '#00f'}`;
-            
-            // Efeito de confete
-            for (let i = 0; i < 100; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.style.position = 'absolute';
-                    confetti.style.width = '10px';
-                    confetti.style.height = '10px';
-                    confetti.style.backgroundColor = winningTeam === 'red' ? 
-                        (Math.random() > 0.5 ? '#f00' : '#f80') : 
-                        (Math.random() > 0.5 ? '#00f' : '#0af');
-                    confetti.style.left = `${Math.random() * 100}%`;
-                    confetti.style.top = '-10px';
-                    confetti.style.borderRadius = '50%';
-                    confetti.style.zIndex = '30';
-                    document.body.appendChild(confetti);
-                    
-                    const angle = Math.random() * Math.PI * 2;
-                    const distance = 100 + Math.random() * 200;
-                    const duration = 2 + Math.random() * 3;
-                    
-                    confetti.animate([
-                        { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-                        { transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance + window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
-                    ], {
-                        duration: duration * 1000,
-                        easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
-                    });
-                    
-                    setTimeout(() => {
-                        if (confetti.parentNode) {
-                            confetti.parentNode.removeChild(confetti);
-                        }
-                    }, duration * 1000);
-                }, i * 50);
-            }
-        }
-
-        function resetGame() {
-            // Remover elementos de rosto e seta dos jogadores anteriores
-            if (player1) player1.destroy();
-            if (player2) player2.destroy();
-            
-            // Posicionar jogadores em lados opostos
-            player1 = new Player(player1Selected, 'red', config.width * 0.25, config.height / 2);
-            player2 = new Player(player2Selected, 'blue', config.width * 0.75, config.height / 2);
-            
-            projectiles = [];
-            monsters = [];
-            effects = [];
-            powerUps = [];
-            lastPowerUpSpawn = 0;
-            gameTime = 0;
-            gameOverScreen.style.display = 'none';
-            victoryScreen.style.display = 'none';
-            roundWinner.style.display = 'none';
-            gameRunning = true;
-            gamePaused = false;
-            
-            // Atualizar nomes dos jogadores
-            player1Info.querySelector('.player-name').textContent = 
-                player1Selected === 'fireMage' ? 'Mago de Fogo' : 
-                player1Selected === 'archer' ? 'Arqueiro Real' : 
-                player1Selected === 'knight' ? 'Cavaleiro Negro' :
-                player1Selected === 'necromancer' ? 'Necromante' :
-                player1Selected === 'lancer' ? 'Lanceiro' : 'Assassino';
-            
-            player2Info.querySelector('.player-name').textContent = 
-                player2Selected === 'fireMage' ? 'Mago de Fogo' : 
-                player2Selected === 'archer' ? 'Arqueiro Real' : 
-                player2Selected === 'knight' ? 'Cavaleiro Negro' :
-                player2Selected === 'necromancer' ? 'Necromante' :
-                player2Selected === 'lancer' ? 'Lanceiro' : 'Assassino';
-        }
-
-        function newMatch() {
-            score = { red: 0, blue: 0 };
-            updateScoreDisplay();
-            resetGame();
-        }
-
-        function returnToMenu() {
-            // Remover elementos de rosto e seta
-            if (player1) player1.destroy();
-            if (player2) player2.destroy();
-            
-            gameRunning = false;
-            victoryScreen.style.display = 'none';
-            gameUI.style.display = 'none';
-            menu.style.display = 'flex';
-            score = { red: 0, blue: 0 };
-            updateScoreDisplay();
-        }
-
-        function updateScoreDisplay() {
-            scoreDisplay.textContent = `Vermelho ${score.red} - ${score.blue} Azul`;
-        }
-
-        function update() {
-            if (!gameRunning || gamePaused) {
-                // Verificar se o round acabou e o tempo de pausa terminou
-                if (roundWinnerTeam && Date.now() > roundEndTime) {
-                    roundWinnerTeam = null;
-                    gamePaused = false;
-                    gameRunning = true;
-                    resetGame();
-                }
-                return;
-            }
-            
-            const now = Date.now();
-            gameTime = now;
-            
-            // Atualizar jogadores
-            player1.update();
-            player2.update();
-            
-            // Spawn de power-ups
-            if (now - lastPowerUpSpawn > config.powerUpSpawnRate) {
-                spawnPowerUp();
-                lastPowerUpSpawn = now;
-            }
-            
-            // Atualizar projéteis
-            for (let i = projectiles.length - 1; i >= 0; i--) {
-                if (projectiles[i].update()) {
-                    projectiles.splice(i, 1);
-                } else {
-                    // Verificar colisão com jogadores
-                    const bullet = projectiles[i];
-                    const targetPlayer = bullet.team === 'red' ? player2 : player1;
-                    
-                    const dx = targetPlayer.x - bullet.x;
-                    const dy = targetPlayer.y - bullet.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance < targetPlayer.size + bullet.size) {
-                        targetPlayer.takeDamage(bullet.damage);
-                        
-                        // Aplicar efeitos se houver
-                        if (bullet.effectType === 'burn') {
-                            effects.push({
-                                target: targetPlayer,
-                                damage: bullet.effectData.damage,
-                                interval: 1000,
-                                lastHitTime: now,
-                                duration: bullet.effectData.duration,
-                                startTime: now,
-                                type: 'burn'
-                            });
-                        } else if (bullet.effectType === 'bleed') {
-                            effects.push({
-                                target: targetPlayer,
-                                damage: bullet.effectData.damage,
-                                interval: 1000,
-                                lastHitTime: now,
-                                duration: bullet.effectData.duration,
-                                startTime: now,
-                                type: 'bleed'
-                            });
-                        } else if (bullet.effectType === 'poison') {
-                            effects.push({
-                                target: targetPlayer,
-                                damage: bullet.effectData.damage,
-                                interval: 1000,
-                                lastHitTime: now,
-                                duration: bullet.effectData.duration,
-                                startTime: now,
-                                type: 'poison',
-                                slow: bullet.effectData.slow
-                            });
-                        }
-                        
-                        projectiles.splice(i, 1);
-                    }
-                    
-                    // Verificar colisão com monstros
-                    for (let j = monsters.length - 1; j >= 0; j--) {
-                        const monster = monsters[j];
-                        if (monster.team !== bullet.team) {
-                            const mdx = monster.x - bullet.x;
-                            const mdy = monster.y - bullet.y;
-                            const mDistance = Math.sqrt(mdx * mdx + mdy * mdy);
-                            
-                            if (mDistance < monster.size + bullet.size) {
-                                if (monster.takeDamage(bullet.damage)) {
-                                    monsters.splice(j, 1);
-                                }
-                                projectiles.splice(i, 1);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Atualizar monstros
-            for (let i = monsters.length - 1; i >= 0; i--) {
-                monsters[i].update();
-                
-                // Verificar se monstro morreu
-                if (monsters[i].health <= 0) {
-                    monsters.splice(i, 1);
-                }
-            }
-            
-            // Atualizar power-ups
-            for (let i = powerUps.length - 1; i >= 0; i--) {
-                if (powerUps[i].checkCollision(player1) || powerUps[i].checkCollision(player2)) {
-                    powerUps.splice(i, 1);
-                }
-            }
-            
-            // Atualizar efeitos
-            for (let i = effects.length - 1; i >= 0; i--) {
-                const effect = effects[i];
-                
-                if (now - effect.startTime > effect.duration) {
-                    effects.splice(i, 1);
-                    continue;
-                }
-                
-                if (effect.type === 'burn' || effect.type === 'bleed' || effect.type === 'poison') {
-                    if (now - effect.lastHitTime > effect.interval) {
-                        effect.target.takeDamage(effect.damage);
-                        
-                        // Aplicar lentidão se for veneno
-                        if (effect.type === 'poison' && effect.slow && !effect.target.slowed) {
-                            const originalSpeed = effect.target.speed;
-                            effect.target.speed *= (1 - effect.slow);
-                            effect.target.slowed = true;
-                            
-                            setTimeout(() => {
-                                effect.target.speed = originalSpeed;
-                                effect.target.slowed = false;
-                            }, effect.duration);
-                        }
-                        
-                        effect.lastHitTime = now;
-                    }
-                } else if (effect.type === 'aura') {
-                    // Aura de fogo do mago
-                    effect.x = effect.team === 'red' ? player1.x : player2.x;
-                    effect.y = effect.team === 'red' ? player1.y : player2.y;
-                    
-                    // Verificar colisão com jogador inimigo
-                    const targetPlayer = effect.team === 'red' ? player2 : player1;
-                    const distance = Math.sqrt(
-                        Math.pow(targetPlayer.x - effect.x, 2) + 
-                        Math.pow(targetPlayer.y - effect.y, 2)
-                    );
-                    
-                    if (distance < effect.radius + targetPlayer.size) {
-                        if (now - effect.lastHitTime > effect.interval) {
-                            targetPlayer.takeDamage(effect.damage);
-                            effect.lastHitTime = now;
-                        }
-                    }
-                }
-            }
-            
-            // Cavaleiro com especial ativo - verificar colisão com espada
-            if (player1.type === 'knight' && player1.specialActive) {
-                const swordLength = player1.size * 2;
-                const swordEndX = player1.x + Math.cos(player1.swordAngle) * swordLength;
-                const swordEndY = player1.y + Math.sin(player1.swordAngle) * swordLength;
-                
-                if (checkLineCircleCollision(
-                    player1.x, player1.y, swordEndX, swordEndY,
-                    player2.x, player2.y, player2.size
-                )) {
-                    player2.takeDamage(5);
-                }
-            }
-            
-            if (player2.type === 'knight' && player2.specialActive) {
-                const swordLength = player2.size * 2;
-                const swordEndX = player2.x + Math.cos(player2.swordAngle) * swordLength;
-                const swordEndY = player2.y + Math.sin(player2.swordAngle) * swordLength;
-                
-                if (checkLineCircleCollision(
-                    player2.x, player2.y, swordEndX, swordEndY,
-                    player1.x, player1.y, player1.size
-                )) {
-                    player1.takeDamage(5);
-                }
-            }
-            
-            // Lanceiro atacando
-            if (player1.type === 'lancer' && player1.attacking) {
-                const lanceLength = player1.size * 1.5;
-                const lanceEndX = player1.x + Math.cos(player1.swordAngle) * lanceLength;
-                const lanceEndY = player1.y + Math.sin(player1.swordAngle) * lanceLength;
-                
-                if (checkLineCircleCollision(
-                    player1.x, player1.y, lanceEndX, lanceEndY,
-                    player2.x, player2.y, player2.size
-                )) {
-                    player2.takeDamage(player1.damage);
-                    player1.attacking = false;
-                }
-            }
-            
-            if (player2.type === 'lancer' && player2.attacking) {
-                const lanceLength = player2.size * 1.5;
-                const lanceEndX = player2.x + Math.cos(player2.swordAngle) * lanceLength;
-                const lanceEndY = player2.y + Math.sin(player2.swordAngle) * lanceLength;
-                
-                if (checkLineCircleCollision(
-                    player2.x, player2.y, lanceEndX, lanceEndY,
-                    player1.x, player1.y, player1.size
-                )) {
-                    player1.takeDamage(player2.damage);
-                    player2.attacking = false;
-                }
-            }
-        }
-
-        function checkLineCircleCollision(x1, y1, x2, y2, cx, cy, r) {
-            // Verificar se o ponto mais próximo da linha está dentro do círculo
-            const lineLength = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-            const u = ((cx - x1) * (x2 - x1) + (cy - y1) * (y2 - y1)) / (lineLength ** 2);
-            
-            if (u < 0 || u > 1) {
-                // O ponto mais próximo está fora do segmento de linha
-                const dist1 = Math.sqrt((cx - x1) ** 2 + (cy - y1) ** 2);
-                const dist2 = Math.sqrt((cx - x2) ** 2 + (cy - y2) ** 2);
-                return Math.min(dist1, dist2) <= r;
-            } else {
-                const px = x1 + u * (x2 - x1);
-                const py = y1 + u * (y2 - y1);
-                const dist = Math.sqrt((cx - px) ** 2 + (cy - py) ** 2);
-                return dist <= r;
-            }
-        }
-
-        function draw() {
-            if (!gameRunning) return;
-            
-            // Limpar tela
-            ctx.fillStyle = '#111';
-            ctx.fillRect(0, 0, config.width, config.height);
-            
-            // Desenhar borda vermelha (ring)
-            const borderSize = 10;
-            ctx.strokeStyle = '#f00';
-            ctx.lineWidth = borderSize;
-            ctx.strokeRect(borderSize/2, borderSize/2, config.width - borderSize, config.height - borderSize);
-            
-            // Desenhar divisão da arena
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(config.width / 2, 0);
-            ctx.lineTo(config.width / 2, config.height);
-            ctx.stroke();
-            
-            // Desenhar power-ups
-            for (const powerUp of powerUps) {
-                powerUp.draw();
-            }
-            
-            // Desenhar monstros
-            for (const monster of monsters) {
-                monster.draw();
-            }
-            
-            // Desenhar projéteis
-            for (const bullet of projectiles) {
-                bullet.draw();
-            }
-            
-            // Desenhar jogadores
-            player1.draw();
-            player2.draw();
-            
-            // Desenhar efeitos
-            for (const effect of effects) {
-                if (effect.type === 'aura') {
-                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.3)' : 'rgba(0, 100, 255, 0.3)';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
-                    ctx.stroke();
-                } else if (effect.type === 'shadow') {
-                    const alpha = effect.alpha * (1 - (Date.now() - effect.startTime) / effect.duration);
-                    ctx.globalAlpha = alpha;
-                    ctx.fillStyle = effect.color;
-                    ctx.beginPath();
-                    ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.globalAlpha = 1.0;
-                } else if (effect.type === 'fireSpecial') {
-                    // Efeito especial do mago de fogo
-                    const progress = (Date.now() - effect.startTime) / effect.duration;
-                    const alpha = 0.7 * (1 - progress);
-                    const radius = effect.radius * (1 + progress * 0.5);
-                    
-                    ctx.globalAlpha = alpha;
-                    ctx.fillStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.3)' : 'rgba(0, 100, 255, 0.3)';
-                    ctx.beginPath();
-                    ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.globalAlpha = 1.0;
-                } else if (effect.type === 'swordSpecial') {
-                    // Efeito especial do cavaleiro
-                    const progress = (Date.now() - effect.startTime) / effect.duration;
-                    const alpha = 0.7 * (1 - progress);
-                    const length = config.playerSize * 3;
-                    const endX = effect.x + Math.cos(effect.angle) * length;
-                    const endY = effect.y + Math.sin(effect.angle) * length;
-                    
-                    ctx.globalAlpha = alpha;
-                    ctx.strokeStyle = '#800080';
-                    ctx.lineWidth = 8;
-                    ctx.beginPath();
-                    ctx.moveTo(effect.x, effect.y);
-                    ctx.lineTo(endX, endY);
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
-                } else if (effect.type === 'necromancerSpecial') {
-                    // Efeito especial do necromante
-                    const progress = (Date.now() - effect.startTime) / effect.duration;
-                    const alpha = 0.7 * (1 - progress);
-                    const radius = effect.radius * (1 + progress * 0.5);
-                    
-                    ctx.globalAlpha = alpha;
-                    ctx.fillStyle = 'rgba(128, 0, 128, 0.3)';
-                    ctx.beginPath();
-                    ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.globalAlpha = 1.0;
-                } else if (effect.type === 'lancerSpecial') {
-                    // Efeito especial do lanceiro
-                    const progress = (Date.now() - effect.startTime) / effect.duration;
-                    const alpha = 0.7 * (1 - progress);
-                    const length = config.playerSize * 4;
-                    const endX = effect.x + Math.cos(effect.angle) * length;
-                    const endY = effect.y + Math.sin(effect.angle) * length;
-                    
-                    ctx.globalAlpha = alpha;
-                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.5)' : 'rgba(0, 100, 255, 0.5)';
-                    ctx.lineWidth = 5;
-                    ctx.beginPath();
-                    ctx.moveTo(effect.x, effect.y);
-                    ctx.lineTo(endX, endY);
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
-                } else if (effect.type === 'assassinSpecial') {
-                    // Efeito especial do assassino
-                    const progress = (Date.now() - effect.startTime) / effect.duration;
-                    const alpha = 0.7 * (1 - progress);
-                    const radius = config.playerSize * 2;
-                    
-                    ctx.globalAlpha = alpha;
-                    ctx.strokeStyle = effect.team === 'red' ? 'rgba(255, 100, 0, 0.5)' : 'rgba(0, 100, 255, 0.5)';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
-                }
-            }
-        }
-
-        function gameLoop() {
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Event listeners
-        window.addEventListener('resize', resizeCanvas);
-        
-        window.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
-            
-            // Teclas do jogador 1
-            if (e.key === 't' && gameRunning && !gamePaused) {
-                player1.shoot();
-            }
-            if (e.key === 'y' && gameRunning && !gamePaused) {
-                player1.useSpecial();
-            }
-            if (e.key === 'g' && gameRunning && !gamePaused && player1.type === 'lancer') {
-                player1.attack();
-            }
-            
-            // Teclas do jogador 2
-            if (e.key === 'l' && gameRunning && !gamePaused) {
-                if (player2.type === 'lancer') {
-                    player2.attack();
-                } else {
-                    player2.shoot();
-                }
-            }
-            if (e.key === 'ç' && gameRunning && !gamePaused) {
-                player2.useSpecial();
-            }
-        });
-        
-        window.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
-        
-        startButton.addEventListener('click', () => {
-            if (!player1Selected || !player2Selected) {
-                alert('Ambos os jogadores devem selecionar um campeão!');
-                return;
-            }
-            
-            menu.style.display = 'none';
-            gameUI.style.display = 'block';
-            newMatch();
-        });
-        
-        restartButton.addEventListener('click', () => {
-            gameOverScreen.style.display = 'none';
-            newMatch();
-        });
-        
-        rematchButton.addEventListener('click', () => {
-            victoryScreen.style.display = 'none';
-            newMatch();
-        });
-        
-        menuButton.addEventListener('click', () => {
+        menuButton2.addEventListener('click', () => {
             returnToMenu();
         });
         
@@ -5145,6 +3088,8 @@
                 el.classList.add('selected');
             });
         });
+
+        muteButton.addEventListener('click', toggleMute);
 
         // Inicialização
         function resizeCanvas() {
