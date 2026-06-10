@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arena of Champions - Mega Update Chiptune Maps</title>
+  <title>Arena of Champions - VFX Rebalance Update</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@400;600;700;800&display=swap');
 
@@ -64,7 +64,17 @@
       -webkit-background-clip: text; color: transparent;
       filter: drop-shadow(0 16px 28px rgba(0,0,0,.35));
     }
-    .subtitle { color: var(--muted); max-width: 760px; font-size: 1rem; line-height: 1.6; }
+    .subtitle { color: var(--muted); max-width: 840px; font-size: 1rem; line-height: 1.6; }
+
+    .feature-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .feature-card {
+      padding: 14px; border-radius: 20px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.045));
+      border: 1px solid rgba(255,255,255,.14); box-shadow: 0 14px 34px rgba(0,0,0,.22);
+    }
+    .feature-card::before { content:''; position:absolute; inset:-40% -30% auto auto; width:120px; height:120px; border-radius:50%; background: rgba(101,247,255,.18); filter: blur(12px); }
+    .feature-card b { display:block; font-family: Orbitron; color: var(--gold); margin-bottom: 6px; font-size:.9rem; }
+    .feature-card span { display:block; color: var(--muted); line-height:1.35; font-size:.78rem; }
 
     .panel {
       background: linear-gradient(180deg, rgba(20,24,52,.92), rgba(8,10,26,.88));
@@ -78,8 +88,8 @@
     }
     @keyframes shine { to { transform: translateX(55%); } }
 
-    .menu-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 18px; }
-    .big-actions { padding: 22px; display: grid; gap: 14px; }
+    .menu-grid { display: grid; grid-template-columns: minmax(280px, 1.12fr) minmax(260px, .88fr); gap: 18px; align-items: stretch; }
+    .big-actions { padding: 22px; display: grid; gap: 14px; align-content:start; }
     .side-actions { padding: 22px; display: grid; gap: 14px; align-content: start; }
 
     button, select, input {
@@ -89,11 +99,11 @@
       border: 0; cursor: pointer; color: white; font-weight: 800; letter-spacing: .3px;
       transition: transform .18s, filter .18s, background .18s, border-color .18s;
     }
-    button:hover { transform: translateY(-2px); filter: brightness(1.08); }
+    button:hover { transform: translateY(-2px); filter: brightness(1.08) saturate(1.12); box-shadow: 0 0 26px rgba(101,247,255,.14), 0 12px 28px rgba(0,0,0,.28); }
     button:active { transform: translateY(1px) scale(.99); }
     button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
     .btn {
-      padding: 14px 18px; border-radius: 16px; background: rgba(255,255,255,.09);
+      padding: 14px 18px; border-radius: 16px; background: linear-gradient(135deg, rgba(255,255,255,.115), rgba(255,255,255,.06));
       border: 1px solid rgba(255,255,255,.15); box-shadow: 0 12px 28px rgba(0,0,0,.25);
       text-align: left;
     }
@@ -229,7 +239,7 @@
     .actions .touch-btn { width: 58px; height: 58px; border-radius: 50%; }
 
     @media (max-width: 860px) {
-      .menu-grid, .teams-grid { grid-template-columns: 1fr; }
+      .menu-grid, .teams-grid, .feature-row { grid-template-columns: 1fr; }
       .setting-grid { grid-template-columns: 1fr; }
       .hud-card { width: calc(50vw - 16px); padding: 9px; }
       .hud-name { font-size: .75rem; }
@@ -248,11 +258,17 @@
     <div id="mainMenu" class="screen active">
       <main class="menu-layout">
         <div class="topline">
-          <span class="chip">🎵 Mega Update v3.0</span>
+          <span class="chip">✨ VFX Rebalance v4.0</span>
           <span class="chip">💰 Moedas: <b id="coinText">0</b></span>
         </div>
         <h1 class="title">Arena of Champions</h1>
-        <p class="subtitle">Batalha local 1v1 com campeões, bosses revisados, trilhas 8-bit mais completas, arenas com hazards funcionais, Boss Rush com respawn infinito, ultimates persistentes, power-ups, loja, códigos e efeitos renovados.</p>
+        <p class="subtitle">Batalha local 1v1 com campeões, bosses, músicas 8-bit, arenas com hazards e uma camada nova de VFX: status mais visíveis, ultimates mais cinematográficas e menu reorganizado para configurar tudo mais rápido.</p>
+
+        <div class="feature-row">
+          <div class="feature-card"><b>⚔️ Duelo local</b><span>Dois jogadores, rounds rápidos, ultimates zeradas em partida nova e persistentes só entre rounds.</span></div>
+          <div class="feature-card"><b>🗺️ Arenas vivas</b><span>Mapas com hazards, portais, paredes, gelo, lava, tempo, sol, cripta e tempestade.</span></div>
+          <div class="feature-card"><b>🎵 Chiptune</b><span>Trilhas 8-bit selecionáveis, tema de boss e fanfarra de vitória.</span></div>
+        </div>
 
         <section class="menu-grid">
           <div class="panel big-actions">
@@ -519,15 +535,15 @@
       lore: 'Um campeão que transforma cada passo em cinzas. Ele domina zonas de perigo e pune inimigos que ficam parados.',
       passive: 'Projéteis aplicam queimadura e pequenas brasas aparecem no caminho.',
       special: 'Bafo do Dragão: cospe uma sequência de chamas em cone, abrindo uma trilha ardente.',
-      ultimate: 'Dragão Solar: uma serpente de fogo atravessa a arena, deixa rastros ardentes e explode no alvo.',
+      ultimate: 'Chuva de Meteoros: meteoros caem do céu em sequência, explodem e deixam rastros de fogo pelo chão.',
       difficulty: 'Fácil'
     },
     archer: {
-      name: 'Arqueiro Real', icon: '🏹', role: 'Mobilidade / mira celestial', price: 0, color: '#66e178', hp: 215, speed: 325, damage: 14, rate: 0.24, bulletSpeed: 820, bulletSize: 6,
+      name: 'Arqueiro Real', icon: '🏹', role: 'Mobilidade / mira celestial', price: 0, color: '#66e178', hp: 215, speed: 325, damage: 11, rate: 0.27, bulletSpeed: 820, bulletSize: 6,
       lore: 'A flecha dele chega antes do medo. Mantém distância, controla linhas retas e finaliza alvos feridos.',
       passive: 'Flechas ganham dano com distância e deixam um rastro fino de vento.',
-      special: 'Salto do Falcão: recua e marca pequenas áreas com flechas celestiais, forte para zonear sem apagar vida inteira.',
-      ultimate: 'Constelação Real: flechas vêm das bordas em ondas telegrafadas e terminam em um disparo perfurante balanceado.',
+      special: 'Salto do Falcão: recua, invoca o falcão e marca várias áreas com flechas celestiais de dano equilibrado.',
+      ultimate: 'Constelação Real: flechas vêm das bordas em ondas mais intensas e terminam em um disparo perfurante forte, sem hitkill.',
       difficulty: 'Médio'
     },
     knight: {
@@ -535,7 +551,7 @@
       lore: 'Uma muralha ambulante. Não é rápido, mas quando chega perto, ninguém fica confortável.',
       passive: 'Recebe menos dano frontal e transforma defesa em avanço.',
       special: 'Muralha Sombria: levanta o escudo, reflete projéteis e solta um golpe frontal pesado.',
-      ultimate: 'Castelo de Ferro: marcha blindado, reflete tiros e dispara ondas de espada em linha.',
+      ultimate: 'Cavaleiro Fantasma: invoca um cavalo, ganha 50% de velocidade, escudo curto e cortes de investida.',
       difficulty: 'Médio'
     },
     necromancer: {
@@ -543,7 +559,7 @@
       lore: 'Ele nunca luta sozinho. Cada sombra no chão pode virar uma nova ameaça.',
       passive: 'Orbe principal se divide onde termina e fragmentos carregam energia sombria.',
       special: 'Portal dos Mortos: invoca esqueletos e faz mãos de ossos surgirem no alvo.',
-      ultimate: 'Catedral dos Ossos: portais cercam o alvo com lanças ósseas, maldição e novos servos.',
+      ultimate: 'Titã Ósseo: invoca um gigante imóvel por 15s, com 3x vida, ataque à distância e várias invocações menores a cada 4 segundos.',
       difficulty: 'Difícil'
     },
     lancer: {
@@ -559,7 +575,7 @@
       lore: 'Ele vence antes de ser visto. Se você perdeu a posição dele, já perdeu metade do duelo.',
       passive: 'Dash básico causa mais dano em alvo marcado e deixa rastro de fumaça.',
       special: 'Manto das Sombras: some, cria cópias falsas e marca o alvo para execução.',
-      ultimate: 'Teatro das Sombras: clones cortam o alvo por ângulos diferentes antes do golpe final.',
+      ultimate: 'Horda de Morcegos: lança morcegos pela arena inteira, causando veneno e curando o Assassino a cada acerto.',
       difficulty: 'Difícil'
     },
     iceMage: {
@@ -567,7 +583,7 @@
       lore: 'A arena fica menor quando ele entra. Cada zona gelada é um convite para o erro.',
       passive: 'Projéteis reduzem velocidade e soltam estilhaços menores ao acertar.',
       special: 'Muralha Glacial: ergue pilares à frente e dispara estilhaços laterais.',
-      ultimate: 'Coroa do Inverno: pilares de gelo prendem o alvo em padrões cruzados e explodem em estilhaços.',
+      ultimate: 'Torre Glacial: coloca uma torre com HP que mantém uma área enorme de 65% slow e dispara projéteis de gelo.',
       difficulty: 'Médio'
     },
     chronomancer: {
@@ -575,14 +591,14 @@
       lore: 'Ele não prevê o futuro: ele testa vários até escolher o que dói menos.',
       passive: 'Disparos criam ecos temporais atrasados, duplicando pressão em linhas diferentes.',
       special: 'Rewind: volta 2 segundos, deixa uma explosão temporal e solta ecos perfurantes.',
-      ultimate: 'Paradoxo: prende o alvo principal em uma bolha temporal com pulsos e estilhaços de tempo.',
+      ultimate: 'Made in Tempo: volta 20 segundos no próprio tempo, recupera posição/HP daquele momento e distorce a tela com estrelas, rifts e projéteis temporais.',
       difficulty: 'Difícil'
     },
     alchemist: {
       name: 'Alquimista', icon: '⚗️', role: 'Veneno / poças', price: 180, color: '#a8ff60', hp: 240, speed: 250, damage: 17, rate: 0.58, bulletSpeed: 560, bulletSize: 9,
       lore: 'Cada frasco é uma pergunta química. A resposta geralmente derrete o chão.',
-      passive: 'Frascos deixam poças e podem estourar em gotículas tóxicas.',
-      special: 'Coquetel Triplo: ácido, cola tóxica e explosivo químico em três ângulos.',
+      passive: 'Frascos agora voam em linha reta, deixam poças ao acertar/terminar e são bem mais confiáveis.',
+      special: 'Coquetel Direcionado: três frascos rápidos em linha reta, com trilhas químicas e poças tóxicas.',
       ultimate: 'Caldeirão Vivo: uma nuvem tóxica móvel persegue o alvo e deixa rastro corrosivo.',
       difficulty: 'Médio'
     },
@@ -591,7 +607,7 @@
       lore: 'Para ele, batalha é engenharia aplicada com barulho. Cada parafuso tem um plano.',
       passive: 'Power-ups duram mais e seus disparos soltam estilhaços tecnológicos.',
       special: 'Torreta Modular: instala uma torre que mira sozinha e cria faíscas de impacto.',
-      ultimate: 'Enxame Bélico: drones orbitais, minas pulsantes e tiros inteligentes por alguns segundos.',
+      ultimate: 'Tanque de Guerra: invoca um tanque grande com HP, metralhadora e mísseis que deixam uma enorme área de fogo.',
       difficulty: 'Médio'
     },
     tempestMonk: {
@@ -599,7 +615,7 @@
       lore: 'Ele aprendeu a respirar com o trovão. O mapa inteiro vira um circuito quando ele acelera.',
       passive: 'Projéteis saltam em cadeia e ganham valor contra grupos e boss.',
       special: 'Passo Relâmpago: dash elétrico com rastro e explosões curtas.',
-      ultimate: 'Tempestade Viva: raios caem em sequência e formam um campo elétrico no alvo.',
+      ultimate: 'Avatar da Tempestade: fica 3x mais rápido por 5 segundos e causa 40 de dano ao colidir com inimigos.',
       difficulty: 'Difícil'
     },
     reaper: {
@@ -607,15 +623,15 @@
       lore: 'O silêncio dele pesa mais do que armadura. Ferir o Ceifador é alimentar a próxima lâmina.',
       passive: 'Cura parte do dano e seus projéteis drenam energia vital.',
       special: 'Campo Sombrio: zona móvel que drena vida e pressiona inimigos próximos.',
-      ultimate: 'Procissão da Foice: cortes sombrios em leque atravessam a arena, drenando vida sem causar hitkill instantâneo.',
+      ultimate: 'Forma da Foice: por 5 segundos, os tiros viram foices gigantes que curam ao acertar, se dividem em todas as direções e cercam o Ceifador com uma área de drenagem.',
       difficulty: 'Médio'
     },
     crimsonSamurai: {
       name: 'Samurai Carmesim', icon: '🥷', role: 'Parry / cortes', price: 320, color: '#ff4b55', hp: 245, speed: 310, damage: 33, rate: 0.5, bulletSpeed: 0, bulletSize: 0,
       lore: 'Dizem que sua lâmina corta o instante entre o ataque e o arrependimento.',
       passive: 'Acertos de lâmina e reflexões recarregam parte da ultimate.',
-      special: 'Parry Carmesim: reflete projéteis, corta ao redor e solta uma onda de katana.',
-      ultimate: 'Lua Rubra: sequência de cortes largos, ondas em cone e finalização perfurante.',
+      special: 'Parry Carmesim: dura mais, reflete projéteis, empurra inimigos próximos e causa stun de 2s se pegá-los na área.',
+      ultimate: 'Corte do Horizonte: dash que atravessa o mapa inteiro, causa 60 de dano e sangramento por 5 segundos.',
       difficulty: 'Muito difícil'
     }
   };
@@ -877,12 +893,12 @@
     selected: { red: 'fireMage', blue: 'archer' },
     mode: 'duel', arenaChoice: 'random', arenaKey: 'classic', scoreLimit: 3, musicChoice: 'random', musicKey: 'neonDrive',
     score: { red: 0, blue: 0 }, round: 1, players: [], projectiles: [], minions: [], particles: [], zones: [], powerUps: [], walls: [], hazards: [], portals: [], drones: [], texts: [], boss: null,
-    lastTime: 0, roundTimer: 0, powerTimer: 0, shake: 0, paused: false, matchStats: null, kingZone: null, stormRadius: 0, winner: null, messageTimer: 0, slowmo: 1,
-    ultCarry: { red: 25, blue: 25 }, ultimateChargePerSecond: 1.65, bossRespawns: { red: 0, blue: 0 }
+    lastTime: 0, roundTimer: 0, powerTimer: 0, shake: 0, paused: false, matchStats: null, kingZone: null, stormRadius: 0, winner: null, messageTimer: 0, slowmo: 1, timeWarp: 0,
+    ultCarry: { red: 0, blue: 0 }, ultimateChargePerSecond: 1.65, bossRespawns: { red: 0, blue: 0 }
   };
 
   class Player {
-    constructor(team, champKey, x, y, initialUlt = 25) {
+    constructor(team, champKey, x, y, initialUlt = 0) {
       this.team = team;
       this.key = champKey;
       this.c = champions[champKey];
@@ -901,7 +917,8 @@
       this.invuln = 0;
       this.stun = 0;
       this.statuses = [];
-      this.buffs = { haste: 0, double: 0, shield: 0, invisible: 0, mark: 0, empowered: 0 };
+      this.buffs = { haste: 0, double: 0, shield: 0, invisible: 0, mark: 0, empowered: 0, mounted: 0, monkStorm: 0, reaperScythe: 0 };
+      this.collisionUltCd = 0;
       this.history = [];
       this.dead = false;
       this.respawnTimer = 0;
@@ -972,7 +989,7 @@
     update(dt) {
       if (this.dead) return;
       this.history.push({ x: this.x, y: this.y, hp: this.hp, t: game.roundTimer });
-      while (this.history.length && game.roundTimer - this.history[0].t > 2.4) this.history.shift();
+      while (this.history.length && game.roundTimer - this.history[0].t > 20.4) this.history.shift();
 
       this.invuln = Math.max(0, this.invuln - dt);
       this.stun = Math.max(0, this.stun - dt);
@@ -985,11 +1002,12 @@
       let speedMul = 1;
       for (const s of this.statuses) {
         s.time -= dt;
-        if (s.type === 'burn' || s.type === 'poison' || s.type === 'drain') {
+        if (s.type === 'burn' || s.type === 'poison' || s.type === 'drain' || s.type === 'bleed') {
           s.tick -= dt;
           if (s.tick <= 0) {
             s.tick = s.interval || .5;
-            this.takeDamage(s.damage || 2, s.source || null, { color: s.type === 'poison' ? '#a8ff60' : '#ff7a2f', ignoreFront: true });
+            const dealt = this.takeDamage(s.damage || 2, s.source || null, { color: s.type === 'poison' ? '#a8ff60' : (s.type === 'bleed' ? '#ff4b55' : (s.type === 'drain' ? '#d78bff' : '#ff7a2f')), ignoreFront: true });
+            if (dealt && s.healOwnerPercent && s.source && s.source.owner && typeof s.source.owner.heal === 'function') s.source.owner.heal(s.source.owner.hpMax * s.healOwnerPercent);
           }
         }
         if (s.type === 'slow') speedMul *= 1 - (s.amount || .25);
@@ -998,6 +1016,8 @@
       this.statuses = this.statuses.filter(s => s.time > 0);
       if (this.stun > 0) speedMul = 0;
       if (this.buffs.haste > 0) speedMul *= 1.45;
+      if (this.buffs.mounted > 0) speedMul *= 1.50;
+      if (this.buffs.monkStorm > 0) speedMul *= 3.0;
       if (game.mode === 'chaos') speedMul *= 1.05;
 
       const input = getInputVector(this.team);
@@ -1011,6 +1031,18 @@
       this.move(vx, vy);
 
       this.handleArena(dt);
+      this.collisionUltCd = Math.max(0, this.collisionUltCd - dt);
+      if (this.buffs.monkStorm > 0) {
+        addZone({ type:'dashTrace', x:this.x, y:this.y, r:38, time:.12, color:'#8dfffb', drawOnly:true });
+        const target = nearestEnemy(this.team, this.x, this.y, this.r + 42, this);
+        if (target && this.collisionUltCd <= 0) {
+          this.collisionUltCd = .24;
+          damageEntity(target, 40, this, this.x, this.y, { color:'#8dfffb', crit:true, ignoreFront:true });
+          addStatusSafe(target, 'slow', .45, { amount:.18 });
+          lightning(this.x, this.y, target.x, target.y, '#8dfffb');
+          game.shake = Math.max(game.shake, 7);
+        }
+      }
       if (this.key === 'assassin' && this.buffs.invisible > 0) {
         this.trailTimer -= dt;
         if (this.trailTimer <= 0) { this.trailTimer = .08; burst(this.x, this.y, '#ffffff', 1, 80); }
@@ -1082,11 +1114,11 @@
           if (this.key === 'fireMage') {
             createProjectile(this, this.angle + rand(-.03,.03), { effect: 'burn', damage: this.damage, size: this.c.bulletSize, speed: this.c.bulletSpeed, color: '#ff8a2a' });
           } else if (this.key === 'archer') {
-            createProjectile(this, this.angle, { damage: this.damage, size: 6, speed: this.c.bulletSpeed, color: this.color, pierce: 0, rangeBonus: true });
+            createProjectile(this, this.angle, { damage: this.damage * .86, size: 6, speed: this.c.bulletSpeed, color: this.color, pierce: 0, rangeBonus: true });
           } else if (this.key === 'knight') {
             for (let i = -1; i <= 1; i++) createProjectile(this, this.angle + i * .18, { damage: this.damage * .72, size: 7, speed: this.c.bulletSpeed, color: '#c8ccd8', range: 360 });
           } else if (this.key === 'necromancer') {
-            createProjectile(this, this.angle, { effect: 'split', damage: this.damage, size: 11, speed: this.c.bulletSpeed, color: '#b56bff', range: 720 });
+            createProjectile(this, this.angle, { effect: 'split', damage: this.damage, size: 11, speed: this.c.bulletSpeed * 1.14, color: '#b56bff', range: 245 });
           } else if (this.key === 'iceMage') {
             createProjectile(this, this.angle, { effect: 'slow', damage: this.damage, size: 10, speed: this.c.bulletSpeed, color: '#7de9ff' });
           } else if (this.key === 'chronomancer') {
@@ -1096,13 +1128,18 @@
               if (!this.dead) createProjectileAt(this, sx, sy, a + rand(-.12,.12), { effect: 'time', damage: this.damage * .48, size: 6, speed: this.c.bulletSpeed * .92, color: '#fff3a3', range: 520, pierce: 1 });
             });
           } else if (this.key === 'alchemist') {
-            createProjectile(this, this.angle + rand(-.07,.07), { effect: 'poisonPool', damage: this.damage, size: 9, speed: this.c.bulletSpeed, color: '#a8ff60', gravity: true, poolSize: 76 });
+            createProjectile(this, this.angle + rand(-.04,.04), { effect: 'poisonPool', damage: this.damage, size: 9, speed: 720, color: '#a8ff60', range: 720, poolSize: 68 });
           } else if (this.key === 'artificer') {
             createProjectile(this, this.angle, { effect: 'shrapnel', damage: this.damage, size: 7, speed: this.c.bulletSpeed, color: '#ffcf75', range: 760 });
           } else if (this.key === 'tempestMonk') {
             createProjectile(this, this.angle, { effect: 'chain', damage: this.damage, size: 7, speed: this.c.bulletSpeed, color: '#8dfffb', pierce: 1 });
           } else if (this.key === 'reaper') {
-            createProjectile(this, this.angle, { effect: 'drain', damage: this.damage, size: 12, speed: this.c.bulletSpeed, color: '#d78bff', pierce: 1, range: 760 });
+            if (this.buffs.reaperScythe > 0) {
+              createProjectile(this, this.angle, { effect: 'scythe1', damage: 22, size: 18, speed: 660, color: '#d78bff', pierce: 2, range: 390, wallPierce: true, crit: true });
+              slashEffect(this.x, this.y, this.angle, 110, '#d78bff');
+            } else {
+              createProjectile(this, this.angle, { effect: 'drain', damage: this.damage, size: 12, speed: this.c.bulletSpeed, color: '#d78bff', pierce: 1, range: 760 });
+            }
           }
         });
       }
@@ -1152,20 +1189,22 @@
         for (let i = 0; i < 28; i++) createProjectile(this, i / 28 * TAU, { effect: 'burn', damage: 16, size: 12, speed: 470, color: '#ff7a2f', range: 520 });
         addZone({ type: 'fire', owner: this, x: this.x, y: this.y, r: 92, time: 2.7, damage: 5, interval: .38, color: '#ff7a2f' });
       } else if (this.key === 'archer') {
-        const target = enemy || { x: this.x + Math.cos(this.angle) * 280, y: this.y + Math.sin(this.angle) * 280, dead:false };
-        this.move(-Math.cos(this.angle) * 105, -Math.sin(this.angle) * 105);
-        burst(this.x, this.y, '#caffbf', 18, 280);
-        for (let i = 0; i < 7; i++) {
-          const tx = clamp(target.x + rand(-105, 105), 55, game.width - 55);
-          const ty = clamp(target.y + rand(-70, 70), 55, game.height - 55);
-          addZone({ type:'arrowMark', x:tx, y:ty, r:30, time:.26 + i*.045, color:this.color, drawOnly:true, onEnd:() => {
-            const sx = clamp(tx + rand(-120, 120), 20, game.width - 20);
-            const sy = -35;
+        const target = enemy || { x: this.x + Math.cos(this.angle) * 320, y: this.y + Math.sin(this.angle) * 320, dead:false };
+        this.move(-Math.cos(this.angle) * 120, -Math.sin(this.angle) * 120);
+        burst(this.x, this.y, '#caffbf', 24, 320);
+        addZone({ type:'falconDive', owner:this, x:this.x, y:this.y, r:82, time:.45, color:'#caffbf', drawOnly:true });
+        for (let i = 0; i < 10; i++) {
+          const tx = clamp(target.x + rand(-120, 120), 55, game.width - 55);
+          const ty = clamp(target.y + rand(-82, 82), 55, game.height - 55);
+          addZone({ type:'arrowMark', x:tx, y:ty, r:32, time:.22 + i*.035, color:i%2?'#caffbf':'#ffd166', drawOnly:true, onEnd:() => {
+            const sx = clamp(tx + rand(-150, 150), 20, game.width - 20);
+            const sy = -45;
             const a = Math.atan2(ty - sy, tx - sx);
-            createProjectileAt(this, sx, sy, a, { damage: 8, size:5, speed:780, color:this.color, range:game.height + 220, pierce:0, wallPierce:true });
-            lightning(sx, sy, tx, ty, this.color);
+            createProjectileAt(this, sx, sy, a, { damage: 11, size:6, speed:850, color:i%2?'#caffbf':'#ffd166', range:game.height + 260, pierce:0, wallPierce:true });
+            lightning(sx, sy, tx, ty, i%2?'#caffbf':'#ffd166');
           }});
         }
+        schedule(.18, () => createProjectile(this, this.angle, { damage: 18, size:8, speed:980, color:'#ffd166', range:760, pierce:1, wallPierce:true, crit:true }));
       } else if (this.key === 'knight') {
         this.buffs.shield = 3.2;
         this.invuln = .35;
@@ -1191,9 +1230,11 @@
         addZone({ type: 'timeBurst', owner: this, x: this.x, y: this.y, r: 118, time: 1.5, damage: 18, interval: .55, slow: .45, color: '#ffe66d' });
         for (let i=-1;i<=1;i++) createProjectile(this, this.angle + i*.28, { effect:'time', damage: 10, size:6, speed:580, color:'#fff3a3', range:420, pierce:1 });
       } else if (this.key === 'alchemist') {
-        createProjectile(this, this.angle - .28, { effect: 'poisonPool', damage: 12, size: 12, speed: 520, color: '#a8ff60', gravity: true, poolSize: 92 });
-        createProjectile(this, this.angle, { effect: 'poisonPool', damage: 17, size: 13, speed: 500, color: '#ffd166', gravity: true, poolSize: 70 });
-        createProjectile(this, this.angle + .28, { effect: 'poisonPool', damage: 12, size: 12, speed: 520, color: '#7dff9f', gravity: true, poolSize: 108 });
+        // Coquetel Direcionado: três frascos retos e rápidos, bem mais fáceis de acertar.
+        createProjectile(this, this.angle - .18, { effect: 'poisonPool', damage: 13, size: 11, speed: 760, color: '#a8ff60', range: 760, poolSize: 88, pierce: 0 });
+        createProjectile(this, this.angle, { effect: 'poisonPool', damage: 19, size: 13, speed: 810, color: '#ffd166', range: 820, poolSize: 74, pierce: 1 });
+        createProjectile(this, this.angle + .18, { effect: 'poisonPool', damage: 13, size: 11, speed: 760, color: '#7dff9f', range: 760, poolSize: 100, pierce: 0 });
+        for (let i=-1;i<=1;i++) lightning(this.x, this.y, this.x + Math.cos(this.angle+i*.18)*210, this.y + Math.sin(this.angle+i*.18)*210, '#a8ff60');
       } else if (this.key === 'artificer') {
         createDrone(this, this.x - Math.cos(this.angle) * 35, this.y - Math.sin(this.angle) * 35, 'turret', 8.5);
         for (let i=0;i<4;i++) addZone({ type:'mineVisual', owner:this, x:this.x + Math.cos(this.angle+i*TAU/4)*72, y:this.y + Math.sin(this.angle+i*TAU/4)*72, r:34, time:1.1, damage:10, interval:.55, slow:.12, color:'#ffcf75' });
@@ -1205,10 +1246,24 @@
         addZone({ type: 'drain', owner: this, follow: this, x: this.x, y: this.y, r: 108, time: 4.8, damage: 7, interval: .5, slow:.12, color: '#d78bff' });
         for (let i=-1;i<=1;i++) createProjectile(this, this.angle+i*.18, { effect:'drain', damage:9, size:8, speed:520, color:'#d78bff', range:380, pierce:1 });
       } else if (this.key === 'crimsonSamurai') {
-        this.buffs.shield = 1.2;
-        reflectProjectiles(this, 165);
-        addZone({ type: 'slashRing', owner: this, x: this.x, y: this.y, r: 120, time: .42, damage: 34, interval: .1, color: '#ff4b55' });
-        createProjectile(this, this.angle, { damage: 24, size: 11, speed: 760, color: '#ff4b55', range: 420, pierce: 1, wallPierce: true });
+        this.buffs.shield = 2.3;
+        this.invuln = Math.max(this.invuln, .55);
+        addZone({ type: 'samuraiParry', owner: this, follow: this, x: this.x, y: this.y, r: 158, time: 1.55, damage: 8, interval: .32, color: '#ff4b55' });
+        for (let i=0;i<5;i++) schedule(i*.28, () => {
+          if (this.dead) return;
+          reflectProjectiles(this, 195);
+          const hits = hostileEntities(this.team).filter(e => !e.dead && Math.hypot(e.x-this.x,e.y-this.y) < 170 + (e.r||0));
+          for (const h of hits) {
+            const a = angleTo(this, h);
+            if (h instanceof Player) h.stun = Math.max(h.stun, 2);
+            if (h instanceof Boss) addStatusSafe(h, 'slow', 1.4, { amount:.42 });
+            if (h instanceof Minion) h.dead = h.type !== 'giant' ? true : h.dead;
+            if (typeof h.x === 'number') { h.x += Math.cos(a) * 36; h.y += Math.sin(a) * 36; moveCircleWithWalls(h, 0, 0, h.r || 20); }
+            burst(h.x, h.y, '#ff4b55', 12, 260);
+          }
+          slashEffect(this.x, this.y, this.angle + rand(-.55,.55), 155, '#ff4b55');
+        });
+        createProjectile(this, this.angle, { damage: 22, size: 11, speed: 780, color: '#ff4b55', range: 460, pierce: 1, wallPierce: true });
       }
     }
 
@@ -1223,64 +1278,100 @@
       game.shake = 12;
       ultimateBurst(this, this.c.color, this.c.name);
       if (this.key === 'fireMage') {
-        const tx = enemy ? enemy.x : this.x + Math.cos(this.angle) * 260;
-        const ty = enemy ? enemy.y : this.y + Math.sin(this.angle) * 260;
-        addZone({ type: 'meteorWarning', owner: this, x: tx, y: ty, r: 160, time: .9, color: '#ffd166', onEnd: () => {
-          addZone({ type: 'fire', owner: this, x: tx, y: ty, r: 165, time: 5.2, damage: 10, interval: .35, color: '#ff7a2f' });
-          explode(tx, ty, 165, 48, this);
-        }});
-      } else if (this.key === 'archer') {
-        const target = enemy || { x:this.x + Math.cos(this.angle)*420, y:this.y + Math.sin(this.angle)*420, dead:false };
-        for (let i = 0; i < 10; i++) {
-          schedule(i * .095, () => {
-            const side = i % 4;
-            const sx = side === 0 ? -40 : side === 1 ? game.width + 40 : clamp(target.x + rand(-260,260), -40, game.width+40);
-            const sy = side === 2 ? -40 : side === 3 ? game.height + 40 : clamp(target.y + rand(-180,180), -40, game.height+40);
-            const tx = clamp(target.x + rand(-80,80), 40, game.width - 40);
-            const ty = clamp(target.y + rand(-55,55), 40, game.height - 40);
-            addZone({ type:'arrowMark', x:tx, y:ty, r:34, time:.18, color:'#ffd166', drawOnly:true });
-            const a = Math.atan2(ty - sy, tx - sx);
-            createProjectileAt(this, sx, sy, a, { damage: 13, size:7, speed:920, color:i%3?'#caffbf':'#ffd166', pierce:1, wallPierce:true, range:1900 });
+        const target = enemy || { x:this.x + Math.cos(this.angle)*360, y:this.y + Math.sin(this.angle)*360 };
+        const centerX = clamp(target.x, 90, game.width-90), centerY = clamp(target.y, 90, game.height-90);
+        for (let i=0;i<18;i++) {
+          schedule(i*.105, () => {
+            const tx = clamp(centerX + rand(-210,210), 45, game.width-45);
+            const ty = clamp(centerY + rand(-150,150), 45, game.height-45);
+            const sx = clamp(tx + rand(-170,170), 20, game.width-20);
+            const sy = -150 - rand(0,120);
+            addZone({ type:'meteorWarning', owner:this, x:tx, y:ty, r:48 + (i%4)*5, time:.32, color:'#ffd166', drawOnly:true, onEnd:() => {
+              addZone({ type:'fallingMeteor', owner:this, sx, sy, x:tx, y:ty, r:64 + (i%3)*4, time:.48, color:'#ff7a2f', drawOnly:true, onEnd:() => {
+                explode(tx, ty, 78, 24, this, '#ff7a2f');
+                addZone({ type:'fire', owner:this, x:tx, y:ty, r:66, time:4.7, damage:4.4, interval:.45, color:'#ff7a2f' });
+                for(let k=0;k<7;k++) game.particles.push(new Particle(tx+rand(-45,45), ty+rand(-20,20), rand(-60,60), rand(-100,-30), '#ffd166', rand(.25,.55), rand(3,8)));
+              }});
+            }});
           });
         }
-        schedule(1.05, () => {
+        for (let i=0;i<6;i++) schedule(i*.25, () => addZone({ type:'fire', owner:this, x:this.x + Math.cos(this.angle)*(90+i*55), y:this.y + Math.sin(this.angle)*(90+i*55), r:60, time:3.8, damage:3.2, interval:.5, color:'#ff7a2f' }));
+      } else if (this.key === 'archer') {
+        const target = enemy || { x:this.x + Math.cos(this.angle)*420, y:this.y + Math.sin(this.angle)*420, dead:false };
+        addZone({ type:'falconDive', owner:this, x:target.x, y:target.y, r:150, time:1.15, color:'#ffd166', drawOnly:true });
+        for (let i = 0; i < 14; i++) {
+          schedule(i * .075, () => {
+            const side = i % 4;
+            const sx = side === 0 ? -55 : side === 1 ? game.width + 55 : clamp(target.x + rand(-300,300), -55, game.width+55);
+            const sy = side === 2 ? -55 : side === 3 ? game.height + 55 : clamp(target.y + rand(-210,210), -55, game.height+55);
+            const tx = clamp(target.x + rand(-120,120), 40, game.width - 40);
+            const ty = clamp(target.y + rand(-85,85), 40, game.height - 40);
+            addZone({ type:'arrowMark', x:tx, y:ty, r:34, time:.22, color:i%3?'#caffbf':'#ffd166', drawOnly:true });
+            const a = Math.atan2(ty - sy, tx - sx);
+            createProjectileAt(this, sx, sy, a, { damage: 12, size:6, speed:960, color:i%3?'#caffbf':'#ffd166', pierce:1, wallPierce:true, range:2000 });
+          });
+        }
+        schedule(1.1, () => {
           if (this.dead) return;
-          createProjectile(this, this.angle, { damage: 34, size:13, speed:1120, color:'#ffd166', pierce:2, wallPierce:true, range:1600, crit:true });
-          lightning(this.x, this.y, this.x + Math.cos(this.angle)*680, this.y + Math.sin(this.angle)*680, '#ffd166');
+          createProjectile(this, this.angle, { damage: 34, size:13, speed:1180, color:'#ffd166', pierce:2, wallPierce:true, range:1650, crit:true });
+          lightning(this.x, this.y, this.x + Math.cos(this.angle)*760, this.y + Math.sin(this.angle)*760, '#ffd166');
+          slashEffect(this.x, this.y, this.angle, 260, '#ffd166');
         });
       } else if (this.key === 'knight') {
-        this.buffs.shield = 7;
-        this.buffs.haste = 3;
-        addZone({ type: 'knightPulse', owner: this, follow: this, x: this.x, y: this.y, r: 120, time: 5.6, damage: 13, interval: .45, color: '#c8ccd8' });
+        this.buffs.mounted = 6;
+        this.buffs.shield = 2.2;
+        this.invuln = .45;
+        addZone({ type:'horseAura', owner:this, follow:this, x:this.x, y:this.y, r:82, time:6, color:'#c8ccd8', drawOnly:true });
+        for (let i=0;i<6;i++) schedule(i*.55, () => {
+          slashEffect(this.x, this.y, this.angle, 128, '#c8ccd8');
+          const hits = hitLineEnemies(this, this.x, this.y, this.x + Math.cos(this.angle)*135, this.y + Math.sin(this.angle)*135, 18, 22, { color:'#c8ccd8', ignoreFront:true });
+          for (const h of hits) addStatusSafe(h, 'slow', .55, { amount:.16 });
+        });
       } else if (this.key === 'necromancer') {
-        this.heal(55 + game.minions.filter(m => m.owner === this).length * 12);
-        for (const m of game.minions.filter(m => m.owner === this)) { explode(m.x, m.y, 80, 22, this, '#b56bff'); m.dead = true; }
-        if (enemy) addStatusSafe(enemy, 'poison', 5, { damage: 8, interval: .6, source: { owner: this, x: this.x, y: this.y } });
-        for (let i = 0; i < 5; i++) createMinion(this, this.x + rand(-70,70), this.y + rand(-70,70), 'bone');
+        const spot = findSafeSpot(28, this.x + Math.cos(this.angle)*90, this.y + Math.sin(this.angle)*90, 40);
+        createMinion(this, spot.x, spot.y, 'giant');
+        for (let i=0;i<4;i++) createMinion(this, spot.x + Math.cos(i*TAU/4)*58, spot.y + Math.sin(i*TAU/4)*58, i%2 ? 'poison' : 'bone');
+        addZone({ type:'summon', owner:this, x:spot.x, y:spot.y, r:130, time:1.1, color:'#b56bff', drawOnly:true });
+        if (enemy) addStatusSafe(enemy, 'poison', 5, { damage: 5, interval: .8, source: { owner: this, x: this.x, y: this.y } });
       } else if (this.key === 'lancer') {
         dashStrike(this, 520, 150, .7, true, '#ffd166');
       } else if (this.key === 'assassin') {
-        if (enemy) {
-          for (let i = 0; i < 5; i++) schedule(i * .13, () => {
-            if (!enemy.dead) {
-              this.x = enemy.x - Math.cos(this.angle) * 44 + rand(-8,8);
-              this.y = enemy.y - Math.sin(this.angle) * 44 + rand(-8,8);
-              slashEffect(enemy.x, enemy.y, rand(0,TAU), 88, '#ffffff');
-              damageEntity(enemy, 24, this, this.x, this.y, { crit: i === 4, color:'#ffffff' });
+        const perp = this.angle + Math.PI/2;
+        for (let wave=0; wave<6; wave++) {
+          schedule(wave*.105, () => {
+            addZone({ type:'batWave', owner:this, x:this.x + Math.cos(this.angle)*70, y:this.y + Math.sin(this.angle)*70, angle:this.angle, r:130, time:.42, color:'#ffffff', drawOnly:true });
+            for (let i=-3;i<=3;i++) {
+              const ox = Math.cos(perp) * (i * 20 + rand(-5,5)), oy = Math.sin(perp) * (i * 20 + rand(-5,5));
+              createProjectileAt(this, this.x + ox, this.y + oy, this.angle + rand(-.05,.05), { effect:'bat', damage: 10, size:14, speed:1040 + wave*20, color:'#ffffff', range:1900, pierce:3, wallPierce:true });
             }
           });
         }
+        addZone({ type:'reaperMist', owner:this, follow:this, x:this.x, y:this.y, r:105, time:.85, color:'#ffffff', drawOnly:true });
       } else if (this.key === 'iceMage') {
-        addZone({ type: 'blizzard', owner: this, x: game.width / 2, y: game.height / 2, r: Math.min(game.width, game.height) * .62, time: 6, damage: 6, interval: .45, slow: .55, color: '#7de9ff' });
-        this.heal(35);
+        const spot = findSafeSpot(25, this.x + Math.cos(this.angle)*115, this.y + Math.sin(this.angle)*115, 40);
+        createDrone(this, spot.x, spot.y, 'iceTower', 28);
+        addZone({ type:'iceTowerAura', owner:this, x:spot.x, y:spot.y, r:235, time:.75, color:'#7de9ff', drawOnly:true });
+        this.heal(25);
       } else if (this.key === 'chronomancer') {
-        if (enemy) {
-          addZone({ type: 'paradox', owner: this, follow: enemy, x: enemy.x, y: enemy.y, r: 185, time: 5.4, damage: 8, interval: .42, slow: .64, color: '#ffe66d' });
-          for (let i=0;i<10;i++) schedule(i*.11, () => {
-            const a = rand(0, TAU);
-            createProjectileAt(this, enemy.x + Math.cos(a)*170, enemy.y + Math.sin(a)*170, a+Math.PI, { effect:'time', damage: 12, size:7, speed:430, color:'#fff3a3', range:340, pierce:1 });
-          });
+        const snap = this.history[0];
+        const ox = this.x, oy = this.y, oldHp = this.hp;
+        if (snap) { this.x = snap.x; this.y = snap.y; this.hp = clamp(snap.hp, 1, this.hpMax); }
+        this.buffs.haste = 3.8;
+        game.slowmo = .58;
+        game.timeWarp = Math.max(game.timeWarp || 0, 2.4);
+        lightning(ox, oy, this.x, this.y, '#ffe66d');
+        floatingText(this.x, this.y - 62, `HP ${Math.round(oldHp)}→${Math.round(this.hp)}`, '#ffe66d');
+        for (let j=0;j<22;j++) addZone({ type:'timeStar', x:rand(40,game.width-40), y:rand(40,game.height-40), r:rand(8,22), time:rand(.55,1.45), color:j%2?'#ffe66d':'#65f7ff', drawOnly:true });
+        for (let j=0;j<5;j++) addZone({ type:'timeRift', x:this.x, y:this.y, r:90+j*36, time:1.15+j*.12, color:j%2?'#ff4fd8':'#65f7ff', drawOnly:true });
+        for (let i=0;i<24;i++) {
+          const a = i * TAU/24;
+          schedule((i%6)*.04, () => createProjectileAt(this, this.x, this.y, a + game.roundTimer*.4, { effect:'time', damage: 10, size:7, speed:520, color:'#fff3a3', range:560, pierce:1, wallPierce:true }));
         }
+        for (let i=0;i<14;i++) {
+          const a = rand(0, TAU), dist = rand(80, 280);
+          lightning(this.x, this.y, this.x + Math.cos(a)*dist, this.y + Math.sin(a)*dist, '#ffe66d');
+        }
+        addZone({ type:'ultimateRing', x:this.x, y:this.y, r:230, time:.65, color:'#ffe66d', drawOnly:true });
       } else if (this.key === 'alchemist') {
         const target = enemy || this;
         addZone({ type: 'toxicChase', owner: this, follow: target, x: target.x, y: target.y, r: 135, time: 6.5, damage: 10, interval: .38, slow: .28, color: '#a8ff60' });
@@ -1288,41 +1379,34 @@
           if (!target.dead) createProjectileAt(this, target.x + rand(-65,65), target.y + rand(-65,65), rand(0,TAU), { effect:'poisonPool', damage: 9, size:8, speed:180, color:'#a8ff60', range:95, poolSize:58 });
         });
       } else if (this.key === 'artificer') {
-        for (let i = 0; i < 4; i++) createDrone(this, this.x + Math.cos(i*TAU/4)*70, this.y + Math.sin(i*TAU/4)*70, 'drone', 7.5);
-        for (let i=0;i<8;i++) {
-          const a=i*TAU/8;
-          addZone({ type:'mineVisual', owner:this, x:this.x+Math.cos(a)*115, y:this.y+Math.sin(a)*115, r:42, time:2.6, damage:12, interval:.55, slow:.16, color:'#ffcf75' });
-        }
+        const spot = findSafeSpot(34, this.x + Math.cos(this.angle)*105, this.y + Math.sin(this.angle)*105, 48);
+        createDrone(this, spot.x, spot.y, 'tank', 10.5);
+        addZone({ type:'missileMark', x:spot.x, y:spot.y, r:90, time:.7, color:'#ffcf75', drawOnly:true });
+        for (let i=0;i<12;i++) burst(spot.x, spot.y, '#ffcf75', 3, 240);
       } else if (this.key === 'tempestMonk') {
-        if (enemy) {
-          addZone({ type:'electricTrail', owner:this, follow:enemy, x:enemy.x, y:enemy.y, r:125, time:3.4, damage:7, interval:.32, slow:.18, color:'#8dfffb' });
-          for (let i = 0; i < 15; i++) schedule(i * .18, () => {
-            if (enemy.dead) return;
-            const x = enemy.x + rand(-135,135), y = enemy.y + rand(-135,135);
-            lightning(x, y, enemy.x, enemy.y, '#8dfffb');
-            explode(x, y, 58, 15, this, '#8dfffb');
-          });
-        }
+        this.buffs.monkStorm = 5;
+        this.invuln = .25;
+        for (let i=0;i<12;i++) schedule(i*.1, () => lightning(this.x, this.y, this.x + rand(-170,170), this.y + rand(-170,170), '#8dfffb'));
+        addZone({ type:'electricTrail', owner:this, follow:this, x:this.x, y:this.y, r:86, time:5, damage:0, interval:.5, slow:.12, color:'#8dfffb' });
       } else if (this.key === 'reaper') {
-        addZone({ type:'reaperMist', owner:this, follow:this, x:this.x, y:this.y, r:155, time:1.25, color:'#d78bff', drawOnly:true });
-        for (let i = -3; i <= 3; i++) {
-          schedule((i+3) * .09, () => {
-            const a = this.angle + i * .18;
-            const x2 = this.x + Math.cos(a) * 245;
-            const y2 = this.y + Math.sin(a) * 245;
-            slashEffect(this.x, this.y, a, 245, '#d78bff');
-            const hits = hitLineEnemies(this, this.x, this.y, x2, y2, 20, i === 0 ? 30 : 21, { color:'#d78bff', crit:i===0 });
-            if (hits.length) { this.heal(5 + hits.length * 3); for (const h of hits) addStatusSafe(h, 'drain', 1.4, { damage: 2, interval:.45, source:{ owner:this, x:this.x, y:this.y } }); }
-          });
-        }
+        this.buffs.reaperScythe = 5;
+        this.buffs.haste = 5;
+        addZone({ type:'drain', owner:this, follow:this, x:this.x, y:this.y, r:158, time:5, damage:5.5, interval:.36, slow:.36, color:'#d78bff' });
+        addZone({ type:'reaperMist', owner:this, follow:this, x:this.x, y:this.y, r:168, time:5, color:'#d78bff', drawOnly:true });
+        for (let i=0;i<5;i++) schedule(i*.18, () => slashEffect(this.x, this.y, rand(0, TAU), 145, '#d78bff'));
       } else if (this.key === 'crimsonSamurai') {
-        for (let i = -3; i <= 3; i++) schedule((i+3) * .09, () => {
-          const a = this.angle + i * .18;
-          slashEffect(this.x, this.y, a, 205, '#ff4b55');
-          createProjectile(this, a, { damage: i===0?52:34, size: i===0?15:12, speed: 820, color: '#ff4b55', pierce: 2, wallPierce: true, range: 620, crit:i===0 });
-        });
-      }
-    }
+        const len = Math.hypot(game.width, game.height) * 1.5;
+        const x1 = this.x, y1 = this.y;
+        const x2 = this.x + Math.cos(this.angle)*len, y2 = this.y + Math.sin(this.angle)*len;
+        slashEffect(x1, y1, this.angle, len, '#ff4b55');
+        addZone({ type:'ultimateRing', x:x1, y:y1, r:150, time:.35, color:'#ff4b55', drawOnly:true });
+        const hits = hitLineEnemies(this, x1, y1, x2, y2, 28, 60, { color:'#ff4b55', crit:true, ignoreFront:true });
+        for (const h of hits) addStatusSafe(h, 'bleed', 5, { damage:5, interval:1, source:{ owner:this, x:x1, y:y1 } });
+        const endX = clamp(x2, 34, game.width-34), endY = clamp(y2, 34, game.height-34);
+        this.x = endX; this.y = endY;
+        burst(this.x, this.y, '#ff4b55', 34, 420);
+        game.slowmo = .58;
+      }    }
 
     draw() {
       if (this.dead) return;
@@ -1357,6 +1441,7 @@
       ctx.fillStyle = 'rgba(0,0,0,.48)'; roundRect(this.x - 35, statusY, 70, 7, 5, true);
       ctx.fillStyle = this.team === 'red' ? '#ff5a6d' : '#5b9dff';
       roundRect(this.x - 35, statusY, 70 * (this.hp / this.hpMax), 7, 5, true);
+      drawStatusVfx(this);
     }
   }
 
@@ -1380,12 +1465,14 @@
       this.gravity = !!opts.gravity;
       this.poolSize = opts.poolSize || 72;
       this.crit = !!opts.crit;
+      this.fuse = opts.fuse || 0;
       this.hitTargets = new WeakSet();
       this.dead = false;
     }
     update(dt) {
       if (this.dead) return;
       this.time += dt;
+      if (this.fuse && this.time >= this.fuse) return this.expire();
       if (this.gravity) this.vy += 180 * dt;
       this.x += this.vx * dt;
       this.y += this.vy * dt;
@@ -1412,14 +1499,14 @@
           if (this.rangeBonus) dmg += Math.min(14, traveled / 80);
           p.takeDamage(dmg, this, { crit: this.crit, color: this.color });
           applyProjectileEffect(this, p);
-          if (this.pierce > 0) this.pierce--; else return this.dead = true;
+          if (this.pierce > 0) this.pierce--; else { if (this.effect === 'split') this.expire(); else this.dead = true; return; }
         }
       }
       if (game.boss && game.boss.team !== this.team && !game.boss.dead && !this.hitTargets.has(game.boss) && Math.hypot(this.x - game.boss.x, this.y - game.boss.y) < this.r + game.boss.r) {
         this.hitTargets.add(game.boss);
         game.boss.takeDamage(this.damage, this);
         applyProjectileEffect(this, game.boss);
-        if (this.pierce > 0) this.pierce--; else return this.dead = true;
+        if (this.pierce > 0) this.pierce--; else { if (this.effect === 'split') this.expire(); else this.dead = true; return; }
       }
       for (const m of game.minions) {
         if (m.team === this.team || m.dead || this.hitTargets.has(m)) continue;
@@ -1427,7 +1514,16 @@
           this.hitTargets.add(m);
           m.takeDamage(this.damage, this);
           applyProjectileEffect(this, m);
-          if (this.pierce > 0) this.pierce--; else return this.dead = true;
+          if (this.pierce > 0) this.pierce--; else { if (this.effect === 'split') this.expire(); else this.dead = true; return; }
+        }
+      }
+      for (const d of game.drones) {
+        if (!d.hpMax || d.team === this.team || d.dead || this.hitTargets.has(d)) continue;
+        if (Math.hypot(this.x - d.x, this.y - d.y) < this.r + d.r) {
+          this.hitTargets.add(d);
+          d.takeDamage(this.damage, this);
+          applyProjectileEffect(this, d);
+          if (this.pierce > 0) this.pierce--; else { if (this.effect === 'split') this.expire(); else this.dead = true; return; }
         }
       }
     }
@@ -1446,6 +1542,16 @@
       if (this.effect === 'poisonPool') {
         addZone({ type: 'poison', owner: this.owner, x: this.x, y: this.y, r: this.poolSize, time: 4.2, damage: 5, interval: .45, slow: .18, color: '#a8ff60' });
       }
+      if (this.effect === 'scythe1') {
+        for (let i=0;i<5;i++) createProjectileAt(this.owner, this.x, this.y, i*TAU/5 + game.roundTimer*.35, { effect:'scythe2', damage:this.damage*.58, size:this.r*.62, speed:560, color:this.color, range:240, pierce:1, wallPierce:true });
+      }
+      if (this.effect === 'scythe2') {
+        for (let i=-1;i<=1;i+=2) createProjectileAt(this.owner, this.x, this.y, this.angle + i*.32, { effect:'drain', damage:this.damage*.46, size:this.r*.62, speed:470, color:this.color, range:155, pierce:0, wallPierce:true });
+      }
+      if (this.effect === 'tankMissile') {
+        explode(this.x, this.y, 118, 24, this.owner, '#ff8f4d');
+        addZone({ type:'fire', owner:this.owner, x:this.x, y:this.y, r:135, time:4.2, damage:5, interval:.42, color:'#ff7a2f' });
+      }
       this.dead = true;
     }
     draw() {
@@ -1462,6 +1568,9 @@
       if (this.effect === 'slow') { ctx.globalAlpha=.75; ctx.strokeStyle='#e6fbff'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-this.r*1.5,0); ctx.lineTo(this.r*1.5,0); ctx.moveTo(0,-this.r*1.5); ctx.lineTo(0,this.r*1.5); ctx.stroke(); }
       if (this.effect === 'drain') { ctx.globalAlpha=.55; ctx.strokeStyle='#110018'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(0,0,this.r*1.45,0,TAU); ctx.stroke(); }
       if (this.effect === 'time') { ctx.globalAlpha=.7; ctx.strokeStyle='#fff3a3'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(0,0,this.r*1.65,0,TAU); ctx.stroke(); }
+      if (this.effect === 'bat') { ctx.globalAlpha=.95; const flap=Math.sin(this.time*32)*this.r*.55; ctx.fillStyle='#09000f'; ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.ellipse(0,0,this.r*.7,this.r*.38,0,0,TAU); ctx.fill(); ctx.beginPath(); ctx.moveTo(-3,0); ctx.quadraticCurveTo(-this.r*1.55,-flap,-this.r*2.0,0); ctx.quadraticCurveTo(-this.r*1.35,flap,-3,0); ctx.fill(); ctx.beginPath(); ctx.moveTo(3,0); ctx.quadraticCurveTo(this.r*1.55,flap,this.r*2.0,0); ctx.quadraticCurveTo(this.r*1.35,-flap,3,0); ctx.fill(); ctx.stroke(); }
+      if (this.effect === 'scythe1' || this.effect === 'scythe2') { ctx.globalAlpha=.9; ctx.strokeStyle='#ffffff'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(0,0,this.r*1.35,.4,Math.PI*1.55); ctx.stroke(); }
+      if (this.effect === 'tankMissile') { ctx.globalAlpha=.8; ctx.fillStyle='#ff7a2f'; ctx.beginPath(); ctx.ellipse(-this.r*.9,0,this.r*1.5,this.r*.55,0,0,TAU); ctx.fill(); }
       ctx.restore();
     }
   }
@@ -1469,18 +1578,46 @@
   class Minion {
     constructor(owner, x, y, type) {
       this.owner = owner; this.team = owner.team; this.type = type;
-      this.x = x; this.y = y; this.r = type === 'poison' ? 16 : 14;
-      this.hp = type === 'poison' ? 42 : 34; this.speed = type === 'poison' ? 160 : 185;
-      this.attack = 9; this.cd = 0; this.time = 12; this.dead = false;
+      this.x = x; this.y = y;
+      this.r = type === 'giant' ? 28 : (type === 'poison' ? 16 : 14);
+      this.hpMax = type === 'giant' ? 108 : (type === 'poison' ? 42 : 34);
+      this.hp = this.hpMax;
+      this.speed = type === 'giant' ? 0 : (type === 'poison' ? 160 : 185);
+      this.attack = type === 'giant' ? 14 : 9;
+      this.cd = type === 'giant' ? .7 : 0;
+      this.spawnCd = 4;
+      this.time = type === 'giant' ? 15 : 12;
+      this.dead = false;
     }
-    takeDamage(amount, source) { this.hp -= amount; burst(this.x, this.y, '#b56bff', 5, 120); if (this.hp <= 0) this.dead = true; if (source && source.owner instanceof Player) source.owner.ult = clamp(source.owner.ult + 3, 0, 100); }
+    addStatus(type, duration, data = {}) { /* minions resist status stacking */ }
+    takeDamage(amount, source) {
+      this.hp -= amount;
+      burst(this.x, this.y, this.type === 'giant' ? '#d7c7ff' : '#b56bff', this.type === 'giant' ? 10 : 5, 120);
+      if (this.hp <= 0) this.dead = true;
+      if (source && source.owner instanceof Player) source.owner.ult = clamp(source.owner.ult + (this.type === 'giant' ? 6 : 3), 0, 100);
+    }
     update(dt) {
       this.time -= dt; if (this.time <= 0) this.dead = true;
       const target = nearestEnemy(this.team, this.x, this.y, 980, this);
       if (!target) return;
+      this.cd -= dt;
+      if (this.type === 'giant') {
+        this.spawnCd -= dt;
+        if (this.spawnCd <= 0) {
+          this.spawnCd = 4;
+          for (let i=0;i<4;i++) createMinion(this.owner, this.x + rand(-58,58), this.y + rand(-58,58), i%3 ? 'bone' : 'poison');
+          addZone({ type:'summon', owner:this.owner, x:this.x, y:this.y, r:72, time:.65, color:'#b56bff', drawOnly:true });
+        }
+        if (this.cd <= 0) {
+          this.cd = .92;
+          const a = angleTo(this, target);
+          createProjectileAt(this.owner, this.x, this.y, a, { effect:'drain', damage:this.attack, size:10, speed:520, color:'#d7c7ff', range:780, pierce:1 });
+          if (Math.random() < .35) arcSpray(this.owner, this.x, this.y, a, 3, .35, { damage:8, size:7, speed:430, color:'#b56bff', range:560 });
+        }
+        return;
+      }
       const a = angleTo(this, target); moveCircleWithWalls(this, Math.cos(a) * this.speed * dt, Math.sin(a) * this.speed * dt, 30);
       applyPassiveHazards(this, dt);
-      this.cd -= dt;
       if (Math.hypot(this.x - target.x, this.y - target.y) < this.r + (target.r || 0) + 8 && this.cd <= 0) {
         this.cd = .85;
         damageEntity(target, this.attack, this.owner, this.x, this.y, { color: '#b56bff' });
@@ -1488,8 +1625,13 @@
       }
     }
     draw() {
-      ctx.save(); ctx.translate(this.x, this.y); ctx.shadowColor = '#b56bff'; ctx.shadowBlur = 10; ctx.fillStyle = this.type === 'poison' ? '#a8ff60' : '#d7c7ff';
-      ctx.beginPath(); ctx.arc(0,0,this.r,0,TAU); ctx.fill(); ctx.fillStyle = '#111'; ctx.font='16px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('☠',0,1); ctx.restore();
+      ctx.save(); ctx.translate(this.x, this.y); ctx.shadowColor = '#b56bff'; ctx.shadowBlur = this.type === 'giant' ? 24 : 10;
+      ctx.fillStyle = this.type === 'giant' ? '#342047' : (this.type === 'poison' ? '#a8ff60' : '#d7c7ff');
+      if (this.type === 'giant') { roundRect(-28,-32,56,64,14,true); ctx.strokeStyle='#d7c7ff'; ctx.lineWidth=3; ctx.strokeRect(-22,-25,44,50); }
+      else { ctx.beginPath(); ctx.arc(0,0,this.r,0,TAU); ctx.fill(); }
+      ctx.fillStyle = this.type === 'giant' ? '#d7c7ff' : '#111'; ctx.font=this.type === 'giant' ? '26px serif' : '16px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(this.type === 'giant' ? '☠' : '☠',0,1);
+      if (this.type === 'giant') { ctx.fillStyle='rgba(0,0,0,.55)'; roundRect(-32,-43,64,6,4,true); ctx.fillStyle='#b56bff'; roundRect(-32,-43,64*(this.hp/this.hpMax),6,4,true); }
+      ctx.restore();
     }
   }
 
@@ -1544,11 +1686,12 @@
       let speedMul = 1;
       for (const s of this.statuses) {
         s.time -= dt;
-        if (s.type === 'burn' || s.type === 'poison' || s.type === 'drain') {
+        if (s.type === 'burn' || s.type === 'poison' || s.type === 'drain' || s.type === 'bleed') {
           s.tick -= dt;
           if (s.tick <= 0) {
             s.tick = s.interval || .55;
-            this.takeDamage(s.damage || 2, s.source || null);
+            const dealt = this.takeDamage(s.damage || 2, s.source || null);
+            if (dealt && s.healOwnerPercent && s.source && s.source.owner && typeof s.source.owner.heal === 'function') s.source.owner.heal(s.source.owner.hpMax * s.healOwnerPercent);
           }
         }
         if (s.type === 'slow') speedMul *= 1 - (s.amount || .2) * .45;
@@ -1623,6 +1766,7 @@
       for(let i=0;i<6+this.phase;i++){ ctx.rotate(TAU/(6+this.phase)); ctx.fillStyle=i%2?'#b56bff':'#ff4fd8'; ctx.fillRect(this.r-8,-4,28,8); }
       ctx.rotate(-this.spin); ctx.fillStyle='white'; ctx.font='34px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(this.phase>=3?'👁️':'👁',0,2); ctx.restore();
       ctx.fillStyle='rgba(0,0,0,.55)'; roundRect(this.x-100,this.y-this.r-28,200,10,8,true); ctx.fillStyle='#ff4fd8'; roundRect(this.x-100,this.y-this.r-28,200*(this.hp/this.hpMax),10,8,true);
+      drawStatusVfx(this);
     }
   }
 
@@ -1685,6 +1829,29 @@
         ctx.font='bold 18px serif'; ctx.textAlign='center'; ctx.fillText('⌄', this.x, this.y - this.r - 8);
         ctx.restore(); return;
       }
+      if (this.type === 'horseAura') {
+        ctx.translate(this.x, this.y);
+        const gallop = Math.sin(this.age*14) * 5;
+        ctx.globalAlpha = .28; ctx.beginPath(); ctx.ellipse(0, 18, this.r*.9, this.r*.36, 0, 0, TAU); ctx.fill();
+        ctx.globalAlpha = .92; ctx.shadowColor=this.color||'#c8ccd8'; ctx.shadowBlur=20; ctx.fillStyle='rgba(210,220,240,.95)'; ctx.strokeStyle='#ffffff'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.ellipse(0, 5, 48, 20, 0, 0, TAU); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(42, -8, 18, 13, -.35, 0, TAU); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#c8ccd8'; ctx.beginPath(); ctx.moveTo(54,-18); ctx.lineTo(66,-30); ctx.lineTo(61,-11); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle='#d7c7ff'; ctx.lineWidth=5;
+        for (let i=-1;i<=1;i+=2) { ctx.beginPath(); ctx.moveTo(-24,22); ctx.lineTo(-34+i*3,46+gallop*i); ctx.moveTo(24,22); ctx.lineTo(36+i*3,46-gallop*i); ctx.stroke(); }
+        ctx.strokeStyle='#ffffff'; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(-45,0); ctx.quadraticCurveTo(-74,-18,-78,18); ctx.stroke();
+        ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(50,-10,2.5,0,TAU); ctx.fill();
+        ctx.restore(); return;
+      }
+      if (this.type === 'iceTowerAura') {
+        ctx.globalAlpha = .20; ctx.beginPath(); ctx.arc(this.x,this.y,this.r*pulse,0,TAU); ctx.fill();
+        ctx.globalAlpha = .55; ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.arc(this.x,this.y,this.r*pulse,0,TAU); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); return;
+      }
+      if (this.type === 'missileMark') {
+        ctx.globalAlpha = .8 * Math.max(0, this.time / .45); ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(this.x,this.y,this.r*pulse,0,TAU); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(this.x-this.r,this.y); ctx.lineTo(this.x+this.r,this.y); ctx.moveTo(this.x,this.y-this.r); ctx.lineTo(this.x,this.y+this.r); ctx.stroke(); ctx.restore(); return;
+      }
       if (this.type === 'reaperMist') {
         ctx.translate(this.x, this.y);
         ctx.rotate((this.age || 0) * 4);
@@ -1695,6 +1862,51 @@
       }
       if (this.type === 'dashTrace') {
         ctx.globalAlpha = .32; ctx.beginPath(); ctx.arc(this.x,this.y,this.r*pulse,0,TAU); ctx.fill(); ctx.restore(); return;
+      }
+      if (this.type === 'fallingMeteor') {
+        const life = .48;
+        const progress = clamp(1 - this.time / life, 0, 1);
+        const sx = this.sx ?? this.x, sy = this.sy ?? -120;
+        const mx = sx + (this.x - sx) * progress;
+        const my = sy + (this.y - sy) * progress;
+        ctx.globalAlpha = .9;
+        ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 8;
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(mx, my); ctx.stroke();
+        ctx.shadowColor = '#ff7a2f'; ctx.shadowBlur = 28; ctx.fillStyle = '#ff7a2f';
+        ctx.beginPath(); ctx.arc(mx, my, this.r * (.42 + .25*Math.sin(this.age*24)), 0, TAU); ctx.fill();
+        ctx.fillStyle = '#ffd166'; ctx.beginPath(); ctx.arc(mx-8, my-7, this.r*.18, 0, TAU); ctx.fill();
+        ctx.restore(); return;
+      }
+      if (this.type === 'falconDive') {
+        ctx.translate(this.x, this.y); ctx.rotate(Math.sin(this.age*8)*.12);
+        ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(0,0,this.r*pulse,0,TAU); ctx.stroke();
+        ctx.globalAlpha = .95; ctx.fillStyle=this.color||'#ffd166'; ctx.font='42px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🦅',0,2);
+        ctx.restore(); return;
+      }
+      if (this.type === 'batWave') {
+        ctx.translate(this.x, this.y); ctx.rotate(this.angle || 0);
+        ctx.globalAlpha = .72; ctx.fillStyle = '#110018'; ctx.shadowColor='#ffffff'; ctx.shadowBlur=14;
+        for (let i=-3;i<=3;i++) {
+          const flap = Math.sin((this.age*18)+i)*8;
+          ctx.beginPath(); ctx.ellipse(0, i*20, 22, 6+Math.abs(flap)*.25, 0, 0, TAU); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(-5,i*20); ctx.quadraticCurveTo(-24,i*20-flap,-36,i*20); ctx.quadraticCurveTo(-22,i*20+flap,-5,i*20); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(5,i*20); ctx.quadraticCurveTo(24,i*20+flap,36,i*20); ctx.quadraticCurveTo(22,i*20-flap,5,i*20); ctx.fill();
+        }
+        ctx.restore(); return;
+      }
+      if (this.type === 'samuraiParry') {
+        ctx.globalAlpha = .36; ctx.beginPath(); ctx.arc(this.x,this.y,this.r*pulse,0,TAU); ctx.fill();
+        ctx.globalAlpha = .9; ctx.lineWidth = 4; ctx.setLineDash([18,8]); ctx.beginPath(); ctx.arc(this.x,this.y,this.r*pulse,0,TAU); ctx.stroke(); ctx.setLineDash([]);
+        ctx.globalAlpha = .75; for(let i=0;i<6;i++){ const a=(this.age*6)+i*TAU/6; ctx.beginPath(); ctx.moveTo(this.x+Math.cos(a)*this.r*.25,this.y+Math.sin(a)*this.r*.25); ctx.lineTo(this.x+Math.cos(a)*this.r,this.y+Math.sin(a)*this.r); ctx.stroke(); }
+        ctx.restore(); return;
+      }
+      if (this.type === 'timeStar') {
+        ctx.translate(this.x,this.y); ctx.rotate(this.age*8); ctx.globalAlpha = Math.max(0, this.time/1.45); ctx.fillStyle=this.color||'#ffe66d';
+        ctx.beginPath(); for(let i=0;i<10;i++){ const rr = i%2 ? this.r*.42 : this.r; ctx.lineTo(Math.cos(i*TAU/10)*rr, Math.sin(i*TAU/10)*rr); } ctx.closePath(); ctx.fill(); ctx.restore(); return;
+      }
+      if (this.type === 'timeRift') {
+        ctx.globalAlpha = .72 * Math.max(0, this.time/1.5); ctx.lineWidth = 4; ctx.strokeStyle=this.color||'#ffe66d';
+        ctx.save(); ctx.translate(this.x,this.y); ctx.rotate((this.age||0)*3); ctx.beginPath(); ctx.ellipse(0,0,this.r*pulse,this.r*.42*pulse,0,0,TAU); ctx.stroke(); ctx.restore(); ctx.restore(); return;
       }
       if (this.type === 'ultimateRing' || this.type === 'bossPulseVisual') {
         ctx.globalAlpha = .8 * Math.max(0, this.time / .32); ctx.lineWidth = 5;
@@ -1708,12 +1920,53 @@
   }
 
   class Drone {
-    constructor(owner, x, y, type, time) { this.owner=owner; this.team=owner.team; this.x=x; this.y=y; this.type=type; this.time=time; this.cd=.25; this.r=16; this.dead=false; this.angle=0; }
+    constructor(owner, x, y, type, time) {
+      this.owner=owner; this.team=owner.team; this.x=x; this.y=y; this.type=type; this.time=time;
+      this.cd=.25; this.angle=0; this.dead=false; this.missileCd=.75; this.slowZone=null;
+      this.r = type === 'tank' ? 34 : (type === 'iceTower' ? 25 : 16);
+      this.hpMax = type === 'tank' ? 260 : (type === 'iceTower' ? 145 : 0);
+      this.hp = this.hpMax;
+    }
+    addStatus(type, duration, data = {}) {}
+    takeDamage(amount, source) {
+      if (!this.hpMax) return 0;
+      this.hp -= Math.max(1, amount);
+      burst(this.x, this.y, this.type === 'iceTower' ? '#7de9ff' : '#ffcf75', 7, 150);
+      if (source && source.owner instanceof Player) source.owner.ult = clamp(source.owner.ult + 2, 0, 100);
+      if (this.hp <= 0) { this.dead = true; if (this.slowZone) this.slowZone.dead = true; explode(this.x, this.y, this.type === 'tank' ? 82 : 55, this.type === 'tank' ? 18 : 8, this.owner, this.type === 'iceTower' ? '#7de9ff' : '#ff8f4d'); }
+      return amount;
+    }
     update(dt) {
       this.time -= dt; if (this.time <= 0) this.dead = true;
-      this.angle += dt * 3;
+      if (this.dead) { if (this.slowZone) this.slowZone.dead = true; return; }
+      this.angle += dt * (this.type === 'tank' ? 1.1 : 3);
       if (this.type === 'drone') { this.x += Math.cos(this.angle)*35*dt; this.y += Math.sin(this.angle*1.3)*35*dt; }
-      const target = nearestEnemy(this.team, this.x, this.y, 650);
+      if (this.type === 'iceTower') {
+        if (!this.slowZone || this.slowZone.dead) { this.slowZone = new Zone({ type:'iceTowerAura', owner:this.owner, follow:this, x:this.x, y:this.y, r:235, time:999, slow:.65, color:'#7de9ff' }); game.zones.push(this.slowZone); }
+        const target = nearestEnemy(this.team, this.x, this.y, 760, this);
+        this.cd -= dt;
+        if (target && this.cd <= 0) {
+          this.cd = .62;
+          createProjectileAt(this.owner, this.x, this.y, angleTo(this,target), { effect:'slow', damage:8, size:8, speed:630, color:'#7de9ff', range:760, pierce:0 });
+        }
+        return;
+      }
+      if (this.type === 'tank') {
+        const target = nearestEnemy(this.team, this.x, this.y, 880, this);
+        this.cd -= dt; this.missileCd -= dt;
+        if (target) this.angle = angleTo(this, target);
+        if (target && this.cd <= 0) {
+          this.cd = .13;
+          createProjectileAt(this.owner, this.x + Math.cos(this.angle)*38, this.y + Math.sin(this.angle)*38, this.angle + rand(-.055,.055), { damage:7, size:5, speed:760, color:'#ffcf75', range:830 });
+        }
+        if (target && this.missileCd <= 0) {
+          this.missileCd = 1.45;
+          createProjectileAt(this.owner, this.x, this.y, angleTo(this,target), { effect:'tankMissile', damage:16, size:13, speed:720, color:'#ff8f4d', range:850, pierce:0, crit:true, fuse:.85 });
+          addZone({ type:'missileMark', x:target.x, y:target.y, r:62, time:.3, color:'#ff8f4d', drawOnly:true });
+        }
+        return;
+      }
+      const target = nearestEnemy(this.team, this.x, this.y, 650, this);
       this.cd -= dt;
       if (target && this.cd <= 0) {
         this.cd = this.type === 'turret' ? .42 : .26;
@@ -1726,7 +1979,16 @@
         });
       }
     }
-    draw(){ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.angle);ctx.shadowColor='#ffcf75';ctx.shadowBlur=14;ctx.fillStyle='#ffcf75';roundRect(-14,-14,28,28,8,true);ctx.fillStyle='#111';ctx.font='16px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(this.type==='turret'?'⌂':'◆',0,1);ctx.restore();}
+    draw(){
+      ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.angle);ctx.shadowColor=this.type==='iceTower'?'#7de9ff':'#ffcf75';ctx.shadowBlur=this.type==='tank'?24:14;
+      if (this.type === 'tank') {
+        ctx.fillStyle='#3b3428'; roundRect(-38,-25,76,50,12,true); ctx.fillStyle='#ffcf75'; roundRect(-8,-12,28,24,8,true); ctx.fillRect(12,-4,44,8); ctx.fillStyle='#111'; ctx.font='24px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('▣',-16,1);
+      } else if (this.type === 'iceTower') {
+        ctx.fillStyle='#0c3245'; roundRect(-20,-32,40,64,12,true); ctx.fillStyle='#7de9ff'; ctx.beginPath(); ctx.moveTo(0,-44); ctx.lineTo(24,-18); ctx.lineTo(0,6); ctx.lineTo(-24,-18); ctx.closePath(); ctx.fill();
+      } else { ctx.fillStyle='#ffcf75';roundRect(-14,-14,28,28,8,true);ctx.fillStyle='#111';ctx.font='16px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(this.type==='turret'?'⌂':'◆',0,1); }
+      if (this.hpMax) { ctx.rotate(-this.angle); ctx.fillStyle='rgba(0,0,0,.55)'; roundRect(-34,-48,68,6,4,true); ctx.fillStyle=this.type==='iceTower'?'#7de9ff':'#ffcf75'; roundRect(-34,-48,68*(this.hp/this.hpMax),6,4,true); }
+      ctx.restore();
+    }
   }
 
   class PowerUp {
@@ -1873,6 +2135,16 @@
         addStatusSafe(other, 'slow', .8, { amount:.18 });
       }
     }
+    if (proj.effect === 'bat') {
+      if (proj.owner && typeof proj.owner.heal === 'function') proj.owner.heal(proj.owner.hpMax * .04);
+      addStatusSafe(target, 'poison', 5, { damage: 5, interval: 1, source: proj, healOwnerPercent: .04 });
+    }
+    if ((proj.effect === 'scythe1' || proj.effect === 'scythe2') && proj.owner && typeof proj.owner.heal === 'function') proj.owner.heal(proj.owner.hpMax * .035);
+    if (proj.effect === 'tankMissile') {
+      explode(proj.x, proj.y, 118, 24, proj.owner, '#ff8f4d');
+      addZone({ type:'fire', owner:proj.owner, x:proj.x, y:proj.y, r:135, time:4.2, damage:5, interval:.42, color:'#ff7a2f' });
+      proj.dead = true;
+    }
     if (proj.effect === 'shrapnel') {
       burst(proj.x, proj.y, '#ffcf75', 10, 240);
       for (let i = 0; i < 5; i++) createProjectileAt(proj.owner, proj.x, proj.y, rand(0, TAU), {
@@ -1901,6 +2173,7 @@
     return [
       ...game.players.filter(p => !p.dead),
       ...game.minions.filter(m => !m.dead),
+      ...game.drones.filter(d => !d.dead && d.hpMax),
       game.boss
     ].filter(Boolean).filter(e => e !== except && e.team !== team && !e.dead);
   }
@@ -1929,7 +2202,7 @@
     if (!target || target.dead) return 0;
     const source = { owner, x, y };
     if (target instanceof Player) return target.takeDamage(damage, source, opts);
-    if (target instanceof Boss || target instanceof Minion) {
+    if (target instanceof Boss || target instanceof Minion || target instanceof Drone) {
       target.takeDamage(damage, source);
       return damage;
     }
@@ -2156,15 +2429,14 @@
       game.score = { red:0, blue:0 };
       game.round = 1;
       game.matchStats = { start: Date.now(), powerups:0, rounds:0 };
-      game.ultCarry = { red: 25, blue: 25 };
+      game.ultCarry = { red: 0, blue: 0 };
       game.bossRespawns = { red: 0, blue: 0 };
     }
     startRound();
   }
 
   function startRound() {
-    syncUltimateCarry();
-    game.state='playing'; game.paused=false; game.winner=null; game.roundTimer=0; game.powerTimer= game.mode === 'chaos' ? 2 : 5; game.projectiles=[]; game.minions=[]; game.particles=[]; game.zones=[]; game.powerUps=[]; game.drones=[]; game.texts=[]; game.hazards=[]; game.walls=[]; game.portals=[]; game.boss=null; scheduled.length=0; game.slowmo=1;
+    game.state='playing'; game.paused=false; game.winner=null; game.roundTimer=0; game.powerTimer= game.mode === 'chaos' ? 2 : 5; game.projectiles=[]; game.minions=[]; game.particles=[]; game.zones=[]; game.powerUps=[]; game.drones=[]; game.texts=[]; game.hazards=[]; game.walls=[]; game.portals=[]; game.boss=null; scheduled.length=0; game.slowmo=1; game.timeWarp=0;
     chooseArena();
     const marginX = Math.max(90, game.width * .14);
     game.players = [new Player('red', game.selected.red, marginX, game.height/2, game.ultCarry.red), new Player('blue', game.selected.blue, game.width-marginX, game.height/2, game.ultCarry.blue)];
@@ -2297,6 +2569,7 @@
     game.roundTimer += dt;
     game.shake = Math.max(0, game.shake - dt*18);
     game.slowmo = clamp(game.slowmo + dt, .58, 1);
+    game.timeWarp = Math.max(0, (game.timeWarp || 0) - dt);
     for (const p of game.players) {
       if (!p.dead) p.ult = clamp(p.ult + dt * game.ultimateChargePerSecond, 0, 100);
       p.update(dt);
@@ -2381,6 +2654,19 @@
     for (const pa of game.particles) pa.draw();
     drawTexts();
     ctx.restore();
+    if (game.timeWarp > 0) drawTimeWarpOverlay();
+  }
+
+  function drawTimeWarpOverlay() {
+    const alpha = clamp(game.timeWarp / 2.4, 0, 1);
+    ctx.save();
+    ctx.globalAlpha = .18 * alpha;
+    const grd = ctx.createLinearGradient(0,0,game.width,game.height);
+    grd.addColorStop(0,'#65f7ff'); grd.addColorStop(.5,'#ff4fd8'); grd.addColorStop(1,'#ffe66d');
+    ctx.fillStyle = grd; ctx.fillRect(0,0,game.width,game.height);
+    ctx.globalAlpha = .42 * alpha; ctx.strokeStyle = '#ffe66d'; ctx.lineWidth = 2;
+    for(let i=0;i<14;i++){ const y=(i*57 + game.roundTimer*260) % game.height; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(game.width,y + Math.sin(game.roundTimer*7+i)*24); ctx.stroke(); }
+    ctx.restore();
   }
 
   function drawGrid(color) {
@@ -2434,6 +2720,40 @@
   function drawWall(w,color){ ctx.save(); ctx.fillStyle='rgba(255,255,255,.09)'; ctx.strokeStyle=color; ctx.lineWidth=2; ctx.shadowColor=color; ctx.shadowBlur=8; roundRect(w.x,w.y,w.w,w.h,10,true); roundRect(w.x,w.y,w.w,w.h,10,false); ctx.restore(); }
   function drawKingZone(){ ctx.save(); ctx.globalAlpha=.3; ctx.fillStyle='#ffd166'; ctx.beginPath(); ctx.arc(game.kingZone.x,game.kingZone.y,game.kingZone.r,0,TAU); ctx.fill(); ctx.globalAlpha=.9; ctx.strokeStyle='#ffd166'; ctx.lineWidth=4; ctx.stroke(); ctx.restore(); }
   function drawStorm(){ const cx=game.width/2,cy=game.height/2; ctx.save(); ctx.fillStyle='rgba(255,79,216,.12)'; ctx.beginPath(); ctx.rect(0,0,game.width,game.height); ctx.arc(cx,cy,game.stormRadius,0,TAU,true); ctx.fill('evenodd'); ctx.strokeStyle='#ff4fd8'; ctx.globalAlpha=.9; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(cx,cy,game.stormRadius,0,TAU); ctx.stroke(); ctx.restore(); }
+
+  function drawStatusVfx(entity) {
+    if (!entity || entity.dead) return;
+    const list = entity.statuses || [];
+    const r = (entity.r || 20) + 8;
+    for (const s of list) {
+      ctx.save();
+      ctx.translate(entity.x, entity.y);
+      const pulse = 1 + Math.sin(game.roundTimer * 12 + r) * .08;
+      if (s.type === 'burn') {
+        ctx.globalAlpha = .72; ctx.fillStyle = '#ff7a2f'; ctx.shadowColor = '#ff7a2f'; ctx.shadowBlur = 14;
+        for (let i=0;i<5;i++){ const a=i*TAU/5 + game.roundTimer*3; ctx.beginPath(); ctx.ellipse(Math.cos(a)*r*.65, Math.sin(a)*r*.65, 6, 16+Math.sin(game.roundTimer*10+i)*4, a, 0, TAU); ctx.fill(); }
+      } else if (s.type === 'poison') {
+        ctx.globalAlpha = .55; ctx.strokeStyle = '#a8ff60'; ctx.lineWidth = 3; ctx.setLineDash([4,6]); ctx.beginPath(); ctx.arc(0,0,r*pulse,0,TAU); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = '#a8ff60'; for(let i=0;i<4;i++){ const a=i*TAU/4-game.roundTimer*2; ctx.beginPath(); ctx.arc(Math.cos(a)*r, Math.sin(a)*r, 3+Math.sin(game.roundTimer*7+i)*1.5,0,TAU); ctx.fill(); }
+      } else if (s.type === 'bleed') {
+        ctx.globalAlpha = .7; ctx.fillStyle = '#ff4b55'; for(let i=0;i<4;i++){ const a=i*TAU/4+game.roundTimer; ctx.beginPath(); ctx.ellipse(Math.cos(a)*r*.75, Math.sin(a)*r*.75+8, 4, 9, 0, 0, TAU); ctx.fill(); }
+      } else if (s.type === 'slow' || s.type === 'freeze') {
+        const ice = s.type === 'freeze' || (s.amount || 0) >= .5;
+        ctx.globalAlpha = ice ? .68 : .46; ctx.strokeStyle = ice ? '#7de9ff' : '#b56bff'; ctx.lineWidth = ice ? 4 : 3;
+        for(let i=0;i<2;i++){ ctx.beginPath(); ctx.arc(0,0,(r+7*i)*pulse, game.roundTimer*(ice?-.9:.7)+i, TAU+game.roundTimer*(ice?-.9:.7)+i); ctx.stroke(); }
+        if (ice) { ctx.fillStyle='#e6fbff'; for(let i=0;i<6;i++){ const a=i*TAU/6; ctx.beginPath(); ctx.moveTo(Math.cos(a)*r*.8,Math.sin(a)*r*.8); ctx.lineTo(Math.cos(a)*(r+10),Math.sin(a)*(r+10)); ctx.stroke(); } }
+      } else if (s.type === 'drain') {
+        ctx.globalAlpha = .5; ctx.strokeStyle = '#d78bff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(0,0,r*pulse, game.roundTimer*2, Math.PI+game.roundTimer*2); ctx.stroke();
+      } else if (s.type === 'marked') {
+        ctx.globalAlpha=.8; ctx.strokeStyle='#ffd166'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-r,-r); ctx.lineTo(r,r); ctx.moveTo(r,-r); ctx.lineTo(-r,r); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    if (entity.stun && entity.stun > 0) {
+      ctx.save(); ctx.translate(entity.x, entity.y - r - 14); ctx.globalAlpha=.9; ctx.fillStyle='#ffd166'; ctx.font='bold 18px serif'; ctx.textAlign='center';
+      ctx.fillText('✦  ✦  ✦', 0, Math.sin(game.roundTimer*18)*3); ctx.restore();
+    }
+  }
   function drawTexts(){ for(const t of game.texts){ ctx.save(); ctx.globalAlpha=Math.max(0,t.time/t.life); ctx.fillStyle=t.color; ctx.font='bold 17px Orbitron'; ctx.textAlign='center'; ctx.fillText(t.text,t.x,t.y); ctx.restore(); } }
 
   function updateHud() {
