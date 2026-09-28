@@ -13,6 +13,7 @@ import {
   type RuleId,
 } from "./game/data";
 import { ArenaEngine, type HudSnapshot, type MatchOptions, type MatchResult } from "./game/engine";
+import { buyChampion, CHAMPION_PRICES, INITIAL_WALLET, loadWallet, matchReward, saveWallet, STARTER_CHAMPION, type ArcaneWallet } from "./game/economy";
 import {
   bindingFromKeyboardEvent,
   CONTROL_ACTIONS,
@@ -33,7 +34,7 @@ import {
   type VolumeChannel,
 } from "./game/settings";
 
-type Screen = "home" | "setup" | "game";
+type Screen = "home" | "setup" | "shop" | "game";
 type ActiveSide = "red" | "blue";
 type SetupStep = "format" | "mode" | "fighters";
 type Career = { matches: number; wins: number; perfectDodges: number };
@@ -72,6 +73,22 @@ function ChampionMark({ id, large = false }: { id: ChampionId; large?: boolean }
       <span className="champion-mark__blade" />
     </span>
   );
+}
+
+function ChampionSelectionGrid({ selected, unlocked, onSelect }: { selected: ChampionId; unlocked: ChampionId[]; onSelect: (id: ChampionId) => void }) {
+  return <div className="fighter-mini-grid">{CHAMPION_LIST.map((champion) => {
+    const locked = !unlocked.includes(champion.id);
+    const price = CHAMPION_PRICES[champion.id as keyof typeof CHAMPION_PRICES];
+    return <button key={champion.id} type="button" disabled={locked}
+      className={`fighter-mini-card ${selected === champion.id && !locked ? "is-selected" : ""}${locked ? " is-locked" : ""}`}
+      style={{ "--champion": champion.accent, "--champion-two": champion.accent2 } as React.CSSProperties}
+      onClick={() => onSelect(champion.id)}
+      aria-label={`${champion.name}${locked ? ` bloqueado, ${price} Pedras Arcanas na loja` : " disponível"}`}
+      aria-pressed={locked ? undefined : selected === champion.id}>
+      <ChampionMark id={champion.id} /><span><b>{champion.name}</b><small>{locked ? `✦ ${price} NA LOJA` : champion.role}</small></span>
+      {locked && <i className="fighter-mini-card__lock" aria-hidden="true">🔒</i>}
+    </button>;
+  })}</div>;
 }
 
 function CombatAbilityStack({ fighter, side, settings }: { fighter: HudSnapshot["red"]; side: ActiveSide; settings: GameSettings }) {
@@ -186,13 +203,20 @@ export function ArenaGame() {
   const guideCloseRef = useRef<HTMLButtonElement | null>(null);
   const settingsCloseRef = useRef<HTMLButtonElement | null>(null);
   const [screen, setScreen] = useState<Screen>("home");
+  const [shopReturn, setShopReturn] = useState<"home" | "setup">("home");
   const [setupStep, setSetupStep] = useState<SetupStep>("format");
   const [format, setFormat] = useState<MatchFormat>("solo");
   const [rule, setRule] = useState<RuleId>("duel");
   const [difficulty, setDifficulty] = useState<DifficultyId>("intermediate");
   const [arena, setArena] = useState<ArenaId>("rift");
   const [redChampion, setRedChampion] = useState<ChampionId>("cinder");
-  const [blueChampion, setBlueChampion] = useState<ChampionId>("wraith");
+  const [blueChampion, setBlueChampion] = useState<ChampionId>("cinder");
+  const [wallet, setWallet] = useState<ArcaneWallet>(INITIAL_WALLET);
+  const walletRef = useRef<ArcaneWallet>(INITIAL_WALLET);
+  const rewardedMatchRef = useRef<number>(-1);
+  const [lastReward, setLastReward] = useState(0);
+  const [shopInspect, setShopInspect] = useState<ChampionId | null>(null);
+  const [shopNotice, setShopNotice] = useState("");
   const [scoreTo, setScoreTo] = useState<2 | 3>(2);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -223,6 +247,9 @@ export function ArenaGame() {
         }
       }
       const loadedSettings = loadSettings();
+      const loadedWallet = loadWallet();
+      walletRef.current = loadedWallet;
+      setWallet(loadedWallet);
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) loadedSettings.effects.reducedMotion = true;
       setSettings(loadedSettings);
       setReducedMotion(loadedSettings.effects.reducedMotion);
@@ -357,9 +384,19 @@ export function ArenaGame() {
       },
       onAudioChange: setAudioEnabled,
       onFinished: (matchResult) => {
+        if (rewardedMatchRef.current === matchId) return;
+        rewardedMatchRef.current = matchId;
         engineRef.current?.setPaused(true);
         setResult(matchResult);
         setPaused(false);
+        const earned = matchReward(options.format, matchResult.rule, matchResult.winner);
+        setLastReward(earned);
+        if (earned) {
+          const next = { ...walletRef.current, stones: walletRef.current.stones + earned };
+          walletRef.current = next;
+          saveWallet(next);
+          setWallet(next);
+        }
         setCareer((current) => {
           const next = {
             matches: current.matches + 1,
@@ -402,10 +439,18 @@ export function ArenaGame() {
   };
 
   const startMatch = () => {
+    if (!walletRef.current.unlocked.includes(redChampion)) setRedChampion(STARTER_CHAMPION);
+    if (format === "local" && !walletRef.current.unlocked.includes(blueChampion)) setBlueChampion(STARTER_CHAMPION);
+    if (format === "solo") {
+      const opponents = CHAMPION_LIST.filter((champion) => walletRef.current.unlocked.includes(champion.id) && champion.id !== redChampion);
+      const pool = opponents.length ? opponents : CHAMPION_LIST.filter((champion) => champion.id !== redChampion);
+      setBlueChampion(pool[Math.floor(Math.random() * pool.length)].id);
+    }
     if (announcementTimer.current) window.clearTimeout(announcementTimer.current);
     setAnnouncement("");
     setHud(null);
     setResult(null);
+    setLastReward(0);
     setPaused(false);
     setMatchId((id) => id + 1);
     setScreen("game");
@@ -416,6 +461,7 @@ export function ArenaGame() {
     setAnnouncement("");
     setHud(null);
     setResult(null);
+    setLastReward(0);
     setPaused(false);
     setMatchId((id) => id + 1);
   };
@@ -463,6 +509,20 @@ export function ArenaGame() {
     commitSettings(setVolume(settings, channel, percent / 100));
   };
 
+  const purchase = (id: ChampionId) => {
+    const next = buyChampion(walletRef.current, id);
+    if (!next) return;
+    walletRef.current = next;
+    saveWallet(next);
+    setWallet(next);
+    setShopNotice(`${CHAMPIONS[id].name} desbloqueado para P1 e P2.`);
+  };
+  const openShop = (from: "home" | "setup") => {
+    setShopReturn(from);
+    setShopNotice("");
+    setScreen("shop");
+  };
+
   const red = CHAMPIONS[redChampion];
   const blue = CHAMPIONS[blueChampion];
   const setupStepIndex = SETUP_STEPS.findIndex((step) => step.id === setupStep);
@@ -480,7 +540,8 @@ export function ArenaGame() {
               <span><b>RIFTBOUND</b><small>ARENA ASCENDANT</small></span>
             </a>
             <div className="home-nav__actions">
-              <span className="career-chip">{career.wins} VITÓRIAS <i /> {career.perfectDodges} ESQUIVAS</span>
+              <span className="arcane-balance" aria-label={`${wallet.stones} Pedras Arcanas`}>✦ <b>{wallet.stones}</b><small>PEDRAS ARCANAS</small></span>
+              <button className="icon-button shop-nav-button" type="button" onClick={() => openShop("home")}>LOJA</button>
               <button className="icon-button" type="button" onClick={() => setAudioEnabled((value) => !value)} aria-label={audioEnabled ? "Desativar áudio" : "Ativar áudio"}>{audioEnabled ? "ÁUDIO ON" : "ÁUDIO OFF"}</button>
               <button className="icon-button" type="button" onClick={() => setShowSettings(true)}>CONFIGURAÇÕES</button>
               <button className="icon-button" type="button" onClick={() => setShowGuide(true)}>COMO JOGAR</button>
@@ -489,15 +550,17 @@ export function ArenaGame() {
 
           <div className="hero" id="inicio">
             <div className="hero__copy">
-              <p className="eyebrow"><span /> O ECLIPSE ESCOLHEU DOIS CAMPEÕES</p>
+              <p className="eyebrow"><span /> O RITUAL DA ARENA COMEÇA AQUI</p>
               <h1>DOMINE<br /><em>A FENDA.</em></h1>
-              <p className="hero__lead">Escolha seu confronto em três passos claros e entre direto na arena. Solo tático, duelo local, Dominação ou a invasão ao trono de Malakar.</p>
+              <p className="hero__lead">Cada vitória deixa uma marca. Reúna Pedras Arcanas, desperte campeões e dispute o domínio dos três núcleos ou o trono de Malakar.</p>
               <div className="home-play-actions">
                 <button className="home-play-button launch-button" type="button" onClick={beginSetup}>
                   <span>JOGAR</span><small>Escolher jogadores, modo e lutadores</small><b>→</b>
                 </button>
-                <span className="home-play-actions__hint">1–2 JOGADORES // 5 NÍVEIS DE IA // BOSS RAID</span>
+                <button className="home-shop-link" type="button" onClick={() => openShop("home")}><span>✦ LOJA DOS CAMPEÕES</span><small>Desbloqueie lutadores com Pedras Arcanas</small><b>↗</b></button>
+                <span className="home-play-actions__hint">1–2 JOGADORES // 3 MODOS // 4 ARENAS</span>
               </div>
+              <div className="home-ritual-steps" aria-label="Jornada do jogador"><span><b>Ⅰ</b> ESCOLHA O RITUAL</span><span><b>Ⅱ</b> VENÇA A BATALHA</span><span><b>Ⅲ</b> DESPERTE HERÓIS</span></div>
             </div>
 
             <div className="hero__duel" aria-hidden="true">
@@ -512,7 +575,33 @@ export function ArenaGame() {
               <div className="hero__stamp"><span>VISÃO AÉREA</span><b>BIRD//VIEW</b><small>MAPAS ATÉ 2240 × 1260</small></div>
             </div>
           </div>
-          <footer className="home-footer"><span>REWORK // BUILD ASCENDANT</span><span>CONTROLES 100% REMAPEÁVEIS</span><span>IA: FÁCIL ATÉ DEMONÍACA</span></footer>
+          <footer className="home-footer"><span>✦ {career.matches} CONFRONTOS // {career.wins} VITÓRIAS P1</span><span>CONTROLES REMAPEÁVEIS</span><span>IA: FÁCIL ATÉ DEMONÍACA</span></footer>
+        </section>
+      )}
+
+      {screen === "shop" && (
+        <section className="shop-screen">
+          <header className="setup-header"><button className="back-button" type="button" onClick={() => setScreen(shopReturn)}>← {shopReturn === "setup" ? "SELEÇÃO" : "MENU"}</button><div className="brand brand--compact"><span className="brand__sigil"><span>R</span></span><span><b>RIFTBOUND</b><small>ARQUIVO DOS CAMPEÕES</small></span></div><span className="arcane-balance">✦ <b>{wallet.stones}</b><small>PEDRAS ARCANAS</small></span></header>
+          <div className="shop-content">
+            <div className="shop-heading"><p className="eyebrow"><span /> O ALTAR DOS DESPERTOS</p><h2>LOJA DOS<br /><em>CAMPEÕES.</em></h2><p>Vença contra a IA, em duelo local ou na caçada ao Boss para juntar Pedras Arcanas. Cada compra desbloqueia o campeão para os dois jogadores.</p></div>
+            <div className="shop-ledger"><span>✦ SALDO <b>{wallet.stones}</b></span><span>DESPERTOS <b>{wallet.unlocked.length} / {CHAMPION_LIST.length}</b></span><small>SOLO +2 · PVP LOCAL +1 · BOSS +4–5 · DERROTA SOLO +0</small></div>
+            <p className="shop-notice" aria-live="polite">{shopNotice || "Asha já está disponível para começar sua jornada."}</p>
+            {[10, 15, 20, 25, 30].map((price) => (
+              <section className="shop-tier" key={price} aria-label={`Campeões de ${price} Pedras Arcanas`}>
+                <div className="shop-tier__heading"><span>✧ {price === 10 ? "INICIANTES" : price < 25 ? "INTERMEDIÁRIOS" : "MESTRES"}</span><b>✦ {price} PEDRAS</b></div>
+                <div className="shop-grid">{CHAMPION_LIST.filter((champion) => CHAMPION_PRICES[champion.id as keyof typeof CHAMPION_PRICES] === price).map((champion) => {
+                  const owned = wallet.unlocked.includes(champion.id);
+                  const inspected = shopInspect === champion.id;
+                  return <article className={`shop-card${owned ? " is-owned" : ""}`} key={champion.id} style={{ "--champion": champion.accent, "--champion-two": champion.accent2 } as React.CSSProperties}>
+                    <div className="shop-card__top"><ChampionMark id={champion.id} large /><div><small>{champion.role}</small><h3>{champion.name}</h3><span>{champion.epithet}</span></div><b className="shop-card__price">{owned ? "DESPERTO" : `✦ ${price}`}</b></div>
+                    <p>{champion.bio}</p>
+                    {inspected && <div className="shop-card__skills"><div><b>ESPECIAL // {champion.specialName}</b><span>{champion.specialDescription}</span></div><div><b>ULTIMATE // {champion.ultimateName}</b><span>{champion.ultimateDescription}</span></div><small>{champion.traits.join(" · ")} // {champion.difficulty}</small></div>}
+                    <div className="shop-card__actions"><button type="button" className="secondary-button" aria-expanded={inspected} onClick={() => setShopInspect(inspected ? null : champion.id)}>{inspected ? "FECHAR" : "INFORMAÇÕES"}</button><button type="button" className="shop-buy" disabled={owned || wallet.stones < price} onClick={() => purchase(champion.id)}>{owned ? "ADQUIRIDO ✓" : wallet.stones < price ? "SALDO INSUFICIENTE" : "DESPERTAR →"}</button></div>
+                  </article>;
+                })}</div>
+              </section>
+            ))}
+          </div>
         </section>
       )}
 
@@ -581,24 +670,20 @@ export function ArenaGame() {
 
             {setupStep === "fighters" && (
               <section className="setup-stage setup-stage--fighters" aria-labelledby="fighters-title">
-                <div className="setup-stage__heading"><span>ETAPA 03 // {rule === "boss" ? "BOSS RAID" : rule === "duel" ? "DUELO" : "DOMINAÇÃO"}</span><h2 id="fighters-title">ESCOLHA OS LUTADORES</h2><p>{rule === "boss" ? `Escolha P1 e ${format === "solo" ? "o rival IA" : "P2"}. Ambos ressurgem e disputam a caça a Malakar.` : format === "local" ? "P1 e P2 escolhem ao mesmo tempo em seus próprios painéis." : "Escolha seu campeão, o oponente e o nível da IA."}</p></div>
+                <div className="setup-stage__heading"><span>ETAPA 03 // {rule === "boss" ? "BOSS RAID" : rule === "duel" ? "DUELO" : "DOMINAÇÃO"}</span><h2 id="fighters-title">ESCOLHA SEU CAMPEÃO</h2><p>{format === "solo" ? "Escolha P1. A IA receberá um lutador aleatório ao iniciar a partida; o nível é definido abaixo." : "Escolha P1 e P2. Os campeões adquiridos ficam disponíveis para os dois jogadores."}</p><button className="selection-shop-link" type="button" onClick={() => openShop("setup")}>✦ {wallet.stones} PEDRAS ARCANAS · VISITAR LOJA →</button></div>
                 <div className={`fighter-select-layout fighter-select-layout--${format}${rule === "boss" ? " fighter-select-layout--boss" : ""}`}>
                   <div className="fighter-selection-table" aria-label="Tabela de seleção de lutadores">
                     <section className="fighter-selection-column fighter-selection-column--red" aria-labelledby="red-selection-title">
                       <header><span>P1 // RUBRO</span><div><ChampionMark id={redChampion} /><b id="red-selection-title">{red.name}</b><small>{red.role}</small></div></header>
-                      <div className="fighter-mini-grid">
-                        {CHAMPION_LIST.map((champion) => <button key={champion.id} type="button" className={`fighter-mini-card ${redChampion === champion.id ? "is-selected" : ""}`} style={{ "--champion": champion.accent, "--champion-two": champion.accent2 } as React.CSSProperties} onClick={() => setRedChampion(champion.id)} aria-pressed={redChampion === champion.id}><ChampionMark id={champion.id} /><span><b>{champion.name}</b><small>{champion.role}</small></span></button>)}
-                      </div>
+                      <ChampionSelectionGrid selected={redChampion} unlocked={wallet.unlocked} onSelect={setRedChampion} />
                       <div className="fighter-selection-detail" style={{ "--champion": red.accent } as React.CSSProperties}><p>{red.bio}</p><span><small>ESP</small><b>{red.specialName}</b></span><span><small>ULT</small><b>{red.ultimateName}</b></span></div>
                     </section>
 
-                    <section className="fighter-selection-column fighter-selection-column--blue" aria-labelledby="blue-selection-title">
-                      <header><span>{format === "solo" ? rule === "boss" ? "RIVAL // IA" : "IA // AZUL" : "P2 // AZUL"}</span><div><ChampionMark id={blueChampion} /><b id="blue-selection-title">{blue.name}</b><small>{blue.role}</small></div></header>
-                      <div className="fighter-mini-grid">
-                        {CHAMPION_LIST.map((champion) => <button key={champion.id} type="button" className={`fighter-mini-card ${blueChampion === champion.id ? "is-selected" : ""}`} style={{ "--champion": champion.accent, "--champion-two": champion.accent2 } as React.CSSProperties} onClick={() => setBlueChampion(champion.id)} aria-pressed={blueChampion === champion.id}><ChampionMark id={champion.id} /><span><b>{champion.name}</b><small>{champion.role}</small></span></button>)}
-                      </div>
+                    {format === "local" && <section className="fighter-selection-column fighter-selection-column--blue" aria-labelledby="blue-selection-title">
+                      <header><span>P2 // AZUL</span><div><ChampionMark id={blueChampion} /><b id="blue-selection-title">{blue.name}</b><small>{blue.role}</small></div></header>
+                      <ChampionSelectionGrid selected={blueChampion} unlocked={wallet.unlocked} onSelect={setBlueChampion} />
                       <div className="fighter-selection-detail" style={{ "--champion": blue.accent } as React.CSSProperties}><p>{blue.bio}</p><span><small>ESP</small><b>{blue.specialName}</b></span><span><small>ULT</small><b>{blue.ultimateName}</b></span></div>
-                    </section>
+                    </section>}
                   </div>
 
                   {(format === "solo" || rule === "boss") && (
@@ -616,7 +701,7 @@ export function ArenaGame() {
                   )}
                 </div>
 
-                <div className="match-ready-bar"><div><span>CONFRONTO PRONTO</span><b>{rule === "boss" ? `${red.name} × ${blue.name} × MALAKAR` : `${red.name} VS ${blue.name}`}</b><small>{rule === "boss" ? `${format === "solo" ? "RIVAL IA" : "2P LOCAL"} // BOSS ${DIFFICULTIES[difficulty].name}` : format === "solo" ? `${DIFFICULTIES[difficulty].name} // RIVAL IA` : "2P LOCAL"}{" // "}{ARENAS[arena].name}</small></div><button className="secondary-button" type="button" onClick={() => setShowSettings(true)}>CONFIGURAÇÕES</button><button className="launch-button" type="button" onClick={startMatch}><span>{rule === "boss" ? "INVADIR O TRONO" : "INICIAR CONFRONTO"}</span><small>{rule === "duel" ? `Primeiro a ${scoreTo} rounds` : rule === "boss" ? "Derrote Malakar e lidere a contribuição de dano" : "Primeiro a 100 de domínio"}</small><b>→</b></button></div>
+                <div className="match-ready-bar"><div><span>CONFRONTO PRONTO</span><b>{rule === "boss" ? `${red.name} × ${format === "solo" ? "IA ALEATÓRIA" : blue.name} × MALAKAR` : `${red.name} VS ${format === "solo" ? "IA ALEATÓRIA" : blue.name}`}</b><small>{rule === "boss" ? `${format === "solo" ? "RIVAL IA" : "2P LOCAL"} // BOSS ${DIFFICULTIES[difficulty].name}` : format === "solo" ? `${DIFFICULTIES[difficulty].name} // RIVAL IA` : "2P LOCAL"}{" // "}{ARENAS[arena].name}</small></div><button className="secondary-button" type="button" onClick={() => setShowSettings(true)}>CONFIGURAÇÕES</button><button className="launch-button" type="button" onClick={startMatch}><span>{rule === "boss" ? "INVADIR O TRONO" : "INICIAR CONFRONTO"}</span><small>{rule === "duel" ? `Primeiro a ${scoreTo} rounds` : rule === "boss" ? "Derrote Malakar e lidere a contribuição de dano" : "Primeiro a 100 de domínio"}</small><b>→</b></button></div>
               </section>
             )}
             </div>
@@ -738,6 +823,7 @@ export function ArenaGame() {
                   <span><b>{result.redDodges + result.blueDodges}</b><small>ESQUIVAS PERFEITAS</small></span>
                   <span><b>{formatTime(result.duration)}</b><small>TEMPO DE BATALHA</small></span>
                 </div>
+                <div className="victory-reward">✦ {lastReward ? `+${lastReward} PEDRAS ARCANAS · SALDO ${wallet.stones}` : "SEM PEDRAS ARCANAS NESTA PARTIDA"}</div>
                 <div className="victory-actions">
                   <button ref={victoryPrimaryRef} className="launch-button" type="button" onClick={rematch}><span>REVANCHE</span><small>Mesmos campeões e regras</small><b>↻</b></button>
                   <button className="secondary-button" type="button" onClick={() => { setSetupStep("fighters"); setScreen("setup"); }}>ALTERAR CONFRONTO</button>

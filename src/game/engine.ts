@@ -311,6 +311,7 @@ type Cinematic = {
 
 type Perception = {
   at: number;
+  rule: RuleId;
   self: { x: number; y: number; vx: number; vy: number; hp: number; hpMax: number; specialCd: number; ultimate: number; ultimateLocked: boolean; dashes: number };
   enemy: { x: number; y: number; vx: number; vy: number; hp: number; hpMax: number; stealth: boolean };
   projectiles: Array<{ x: number; y: number; vx: number; vy: number; r: number; damage: number }>;
@@ -648,6 +649,7 @@ class TacticalAI {
     if (risk > this.params.evadeRisk) return "EVADIR";
     if (health < 0.28 && enemyHealth > health + 0.12) return "RECUAR";
     if (snapshot.pickups.some((pickup) => Math.hypot(pickup.x - snapshot.self.x, pickup.y - snapshot.self.y) < 330) && health < 0.72) return "BUSCAR NÚCLEO";
+    if (snapshot.rule === "dominion" && enemyDistance > 140) return "CONTROLAR";
     if (enemyHealth < 0.25 && health > 0.38) return "FINALIZAR";
     if (enemyDistance < this.fighter.champion.idealRange * 0.55) return "MANTER DISTÂNCIA";
     if (enemyDistance > this.fighter.champion.idealRange * 1.35) return "PRESSIONAR";
@@ -701,7 +703,10 @@ class TacticalAI {
       }
       if (this.state === "CONTROLAR") {
         const objectiveDistance = Math.hypot(point.x - snapshot.objective.x, point.y - snapshot.objective.y);
-        score += clamp(1 - objectiveDistance / 520, 0, 1) * 0.7;
+        score += snapshot.rule === "dominion"
+          ? (Math.hypot(current.x - snapshot.objective.x, current.y - snapshot.objective.y) - objectiveDistance) / 120 * 2.6
+            + (objectiveDistance < 72 ? 2.2 : 0)
+          : clamp(1 - objectiveDistance / 520, 0, 1) * 0.7;
       }
       const directionChange = Math.hypot(dirX - this.currentIntent.moveX, dirY - this.currentIntent.moveY);
       score -= directionChange * 0.13;
@@ -1332,12 +1337,16 @@ export class ArenaEngine {
     if (enemy !== fighter) fighter.aimTargetId = enemy.id;
     const objectiveTarget = this.options.rule === "dominion" && this.dominionNodes.length
       ? [...this.dominionNodes].sort((left, right) => {
-          const priority = (node: (typeof this.dominionNodes)[number]) => distance(fighter, node) + (node.owner === fighter.team ? 620 : node.owner ? -120 : 0);
+          const priority = (node: (typeof this.dominionNodes)[number]) => {
+            const threatened = enemy !== fighter && !enemy.dead && distance(enemy, node) < node.r + 30;
+            return distance(fighter, node) + (node.owner === fighter.team ? threatened ? -350 : 620 : node.owner ? -120 : 0);
+          };
           return priority(left) - priority(right);
         })[0]
       : this.objective;
     return {
       at: this.elapsed,
+      rule: this.options.rule,
       self: {
         x: fighter.x,
         y: fighter.y,
@@ -2582,12 +2591,13 @@ export class ArenaEngine {
         }
         if (node.capture >= 99) node.owner = "red";
         else if (node.capture <= -99) node.owner = "blue";
-        else if (Math.abs(node.capture) < 2) node.owner = null;
+        else if ((node.owner === "red" && node.capture <= 0) || (node.owner === "blue" && node.capture >= 0)) node.owner = null;
         const safeControl = node.owner === "red" ? !blueInside : node.owner === "blue" ? !redInside : false;
         if (node.owner && safeControl) this.objective[node.owner] = clamp(this.objective[node.owner] + dt * 0.9, 0, 100);
       }
-      if (this.objective.red >= 100) this.finishMatch("red");
-      if (this.objective.blue >= 100) this.finishMatch("blue");
+      if (this.objective.red >= 100 || this.objective.blue >= 100) {
+        this.finishMatch(this.objective.red >= this.objective.blue ? "red" : "blue");
+      }
       return;
     }
     if (this.options.rule === "boss") return;
